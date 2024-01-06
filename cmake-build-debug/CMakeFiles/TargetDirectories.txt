@@ -1,0 +1,3 @@
+C:/Users/nguye/CLionProjects/BKGameeee/cmake-build-debug/CMakeFiles/BKGameeee.dir
+C:/Users/nguye/CLionProjects/BKGameeee/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/nguye/CLionProjects/BKGameeee/cmake-build-debug/CMakeFiles/rebuild_cache.dir

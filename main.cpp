@@ -23,6 +23,8 @@ public:
         rotX = "0"; rotY = "0"; rotZ = "0";
     }
 
+
+
     Object(string path, string name, string posX, string posY, string posZ,
            string scaleX, string scaleY, string scaleZ,
            string rotX, string rotY, string rotZ)

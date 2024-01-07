@@ -114,8 +114,8 @@ public:
     }
 
     void setMatrix() {
-        for (int i = 0; i < objList.size(); i++){
-            for(int j = 0; j < objList.size(); j++)
+        for (int i = 0; i < 10; i++){
+            for(int j = 0; j < 10; j++)
             {
                 matrix[i][j] = "0";
             }

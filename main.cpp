@@ -105,11 +105,11 @@ public:
         return matrix;
     }
 
-    vector<Object> getList() {
+    vector<Object> getObjList() {
         return objList;
     }
 
-    void setObj(vector<Object> list) {
+    void setObjList(vector<Object> list) {
         objList = list;
     }
 
@@ -501,38 +501,39 @@ void changemap() {
 
 int main() {
     readFile("map.txt");
-    int choice;
-    while(true) {
-        cout << "MENU\n";
-        cout << "1:Play.\n";
-        cout << "2:Find path.\n";
-        cout << "3:Create map.\n";
-        cout << "4:Change in map.\n";
-        cout << "5:Cheking for validity.\n";
-        cout << "6:Exit\n";
-        cout << "Enter choice:";
-        cin >> choice;
-        cin.ignore();
-        if (choice == 1)
-        {
-
-        }
-        else if (choice == 2)
-        {
-
-        }
-        else if (choice == 3)
-        {
-            createmap();
-        }
-        else if (choice == 4)
-        {
-            changemap();
-        }
-        else if (choice == 6)
-        {
-            cout << "ENDING PROGRAM!" << endl;
-            break;
-        }
-    }
+//    int choice;
+//    while(true) {
+//        cout << "MENU\n";
+//        cout << "1:Play.\n";
+//        cout << "2:Find path.\n";
+//        cout << "3:Create map.\n";
+//        cout << "4:Change in map.\n";
+//        cout << "5:Cheking for validity.\n";
+//        cout << "6:Exit\n";
+//        cout << "Enter choice:";
+//        cin >> choice;
+//        cin.ignore();
+//        if (choice == 1)
+//        {
+//
+//        }
+//        else if (choice == 2)
+//        {
+//
+//        }
+//        else if (choice == 3)
+//        {
+//            createmap();
+//        }
+//        else if (choice == 4)
+//        {
+//            changemap();
+//        }
+//        else if (choice == 6)
+//        {
+//            cout << "ENDING PROGRAM!" << endl;
+//            break;
+//        }
+//    }
+    mapList[0].g
 }

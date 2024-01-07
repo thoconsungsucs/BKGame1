@@ -291,6 +291,14 @@ void printMatrix(string matrix[10][10]) {
     cout << endl;
 }
 
+void printMap()
+{
+    for (int i = 0; i < mapList.size(); i++) {
+        mapList[i].printMatrix();
+    }
+}
+
+//Function 1:
 void play() {
     int index;
     do {
@@ -355,13 +363,65 @@ void play() {
     } while (flag);
 }
 
-void printMap()
-{
-    for (int i = 0; i < mapList.size(); i++) {
-        mapList[i].printMatrix();
-    }
+
+// Function 2: Find patch
+bool isValidMove(int x, int y, const vector<vector<int>>& matrix, const vector<vector<bool>>& visited) {
+    return x >= 0 && x < matrix.size() && y >= 0 && y < matrix[0].size() && matrix[x][y] == 0 && !visited[x][y];
 }
 
+vector<Position> findPath(const vector<vector<int>>& matrix) {
+    int rows = matrix.size();
+    int cols = matrix[0].size();
+
+    // Điểm xuất phát và điểm đích là cố định
+    Position start = {0, 0};
+    Position end = {9, 9};
+
+    // Khởi tạo ma trận visited để theo dõi các ô đã được đi qua
+    vector<vector<bool>> visited(rows, vector<bool>(cols, false));
+
+    // Hướng di chuyển ban đầu
+    vector<Position> directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+
+    // Lưu trữ kết quả
+    vector<Position> path;
+    path.push_back(start);
+
+    // Quy hoạch động để tìm đường đi
+    Position current = start;
+    while (current.x != end.x || current.y != end.y) {
+        bool foundMove = false;
+
+        for (const auto& direction : directions) {
+            int new_x = current.x + direction.x;
+            int new_y = current.y + direction.y;
+
+            if (isValidMove(new_x, new_y, matrix, visited)) {
+                visited[new_x][new_y] = true;
+                path.push_back({new_x, new_y});
+                current = {new_x, new_y};
+                foundMove = true;
+                break;
+            }
+        }
+
+        if (!foundMove) {
+            // Nếu không tìm thấy bước di chuyển hợp lệ, quay lui
+            path.pop_back();
+            if (!path.empty()) {
+                current = path.back();
+            } else {
+                // Không còn đường để quay lui
+                break;
+            }
+        }
+    }
+
+    return path;
+}
+
+
+//Function 3:
 void createmap(){
     string name_map;
     cout << "Enter a name for a new map:";
@@ -416,6 +476,19 @@ void createmap(){
     printMap();
 }
 
+
+//Function 4:
+bool isPositionValid(int x, int y, int z, vector<Object> &objList) {
+    if (x < 0 || x >= 10 || y < 0 || y >= 10 || z < 0 || z >= 10) return false;
+
+    for (int i = 0; i < objList.size(); i++) {
+        if (objList[i].getPosX() == to_string(x) && objList[i].getPosY() == to_string(y) && objList[i].getPosZ() == to_string(z)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void changemap() {
     int mapIndex, objectIndex, option;
 
@@ -467,24 +540,30 @@ void changemap() {
         }
         case 2: // Change position
         {
-
             vector<Object> newObjList;
-            int  newX,newY,newZ;
+            string  newX,newY,newZ;
             newObjList = mapList[mapIndex - 1].getList();
 
-            cout << "Enter the new X position: ";
-            cin >> newX;
-            cout << "Enter the new Y position: ";
-            cin >> newY;
-            cout << "Enter the new Z position: ";
-            cin >> newZ;
+            do {
+                cout << "Enter the new X position: ";
+                cin >> newX;
+                cout << "Enter the new Y position: ";
+                cin >> newY;
+                cout << "Enter the new Z position: ";
+                cin >> newZ;
 
-            newObjList[objectIndex - 1].setPosX(to_string(newX));
-            newObjList[objectIndex - 1].setPosY(to_string(newY));
-            newObjList[objectIndex - 1].setPosZ(to_string(newZ));
+                if (!isPositionValid(stoi(newX),stoi(newY),stoi(newZ),newObjList)) {
+                    cout << "Invalid position. Either out of bounds or position is already taken. Please try again.\n";
+                } else {
+                    break;
+                }
+            } while (true);
+
+            newObjList[objectIndex - 1].setPosX(newX);
+            newObjList[objectIndex - 1].setPosY(newY);
+            newObjList[objectIndex - 1].setPosZ(newZ);
             mapList[mapIndex - 1].setObjList(newObjList);
             mapList[mapIndex - 1].setMatrix();
-            mapList[mapIndex - 1].printMatrix();
             break;
         }
         case 3: // Change scale
@@ -531,65 +610,37 @@ void changemap() {
     // Display the updated attributes of the selected object
     cout << "Updated attributes of the selected object:\n";
     mapList[mapIndex - 1].printanObject(objectIndex - 1);
-    mapList[mapIndex - 1].printallObjects();
-}
-// Function 2: Find patch
-bool isValidMove(int x, int y, const vector<vector<int>>& matrix, const vector<vector<bool>>& visited) {
-    return x >= 0 && x < matrix.size() && y >= 0 && y < matrix[0].size() && matrix[x][y] == 0 && !visited[x][y];
+    mapList[mapIndex - 1].printMatrix();
 }
 
-// Tìm đường đi từ điểm xuất phát đến điểm đích
-vector<Position> findPath(const vector<vector<int>>& matrix) {
-    int rows = matrix.size();
-    int cols = matrix[0].size();
+//Save infor
+void saveToFile(const string& filename, vector<Map>& mapList) {
+    ofstream file;
+    file.open("map.txt");
 
-    // Điểm xuất phát và điểm đích là cố định
-    Position start = {0, 0};
-    Position end = {9, 9};
-
-    // Khởi tạo ma trận visited để theo dõi các ô đã được đi qua
-    vector<vector<bool>> visited(rows, vector<bool>(cols, false));
-
-    // Hướng di chuyển ban đầu
-    vector<Position> directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-
-    // Lưu trữ kết quả
-    vector<Position> path;
-    path.push_back(start);
-
-    // Quy hoạch động để tìm đường đi
-    Position current = start;
-    while (current.x != end.x || current.y != end.y) {
-        bool foundMove = false;
-
-        for (const auto& direction : directions) {
-            int new_x = current.x + direction.x;
-            int new_y = current.y + direction.y;
-
-            if (isValidMove(new_x, new_y, matrix, visited)) {
-                visited[new_x][new_y] = true;
-                path.push_back({new_x, new_y});
-                current = {new_x, new_y};
-                foundMove = true;
-                break;
-            }
-        }
-
-        if (!foundMove) {
-            // Nếu không tìm thấy bước di chuyển hợp lệ, quay lui
-            path.pop_back();
-            if (!path.empty()) {
-                current = path.back();
-            } else {
-                // Không còn đường để quay lui
-                break;
-            }
-        }
+    if (!file.is_open()) {
+        cout << "Cannot open file: " << filename << endl;
+        return;
     }
 
-    return path;
-}
+    for (auto& map : mapList) {
+        file << "MAP" << map.getIndex() << "\n";
+        vector<Object> objList = map.getList();
 
+        for (int i = 0; i < objList.size(); i++) {
+            file << "OBJ\n";
+            file << objList[i].getName() << "\n";
+            file << objList[i].getPosX() << "," << objList[i].getPosY() << "," << objList[i].getPosZ() << "\n";
+            file << objList[i].getScaleX() << "," << objList[i].getScaleY() << "," << objList[i].getScaleZ() << "\n";
+            file << objList[i].getRotX() << "," << objList[i].getRotY() << "," << objList[i].getRotZ() << "\n";
+            file << "model\\" << objList[i].getName() << ".obj" << "\n";
+        }
+        file << "\n";
+    }
+
+    file.close();
+    cout << "Maps and objects saved to " << filename << endl;
+}
 
 int main() {
     readFile("map.txt");
@@ -610,10 +661,12 @@ int main() {
         {
             printMap();
         }
+
         else if (choice == 1)
         {
             play();
         }
+
         else if (choice == 2)
         {
             mapList[0].getElementAt(0,0);
@@ -653,23 +706,26 @@ int main() {
                 }
 
         }
-
         
         else if (choice == 3)
         {
             createmap();
         }
+
         else if (choice == 4)
         {
             changemap();
         }
+
         else if (choice == 5)
         {
 
         }
+
         else if (choice == 6)
         {
             cout << "ENDING PROGRAM!" << endl;
+            saveToFile("map.txt",mapList);
             break;
         }
     }

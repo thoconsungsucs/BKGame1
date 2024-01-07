@@ -6,6 +6,8 @@
 #include <iomanip>
 #include <filesystem>
 
+#include"struct.cpp"
+
 using namespace std;
 namespace fs = std::filesystem;
 
@@ -115,23 +117,25 @@ public:
     }
 
     void setMatrix() {
-
-
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 matrix[i][j] = "0";
             }
         }
+
         for (int i = 0; i < objList.size(); i++) {
             int x = stoi(objList[i].getPosX());
             int y = stoi(objList[i].getPosY());
 
             if (x >= 0 && x < 10 && y >= 0 && y < 10) {
                 matrix[x][y] = objList[i].getName();
-            } else {
-                cout << "Invalid coordinates for object: " << objList[i].getName() << endl;
             }
         }
+    }
+
+
+    string getElementAt(int x, int y) {
+        return matrix[x][y];
     }
 
 
@@ -206,6 +210,7 @@ public:
     int totalobj() {
         return objList.size();
     }
+
 };
 
 
@@ -527,6 +532,67 @@ void changemap() {
     mapList[mapIndex - 1].printallObjects();
 }
 
+// Function 2: Find patch
+bool isValidMove(int x, int y, const vector<vector<int>> &matrix, const vector<vector<bool>> &visited) {
+    return x >= 0 && x < matrix.size() && y >= 0 && y < matrix[0].size() && matrix[x][y] == 0 && !visited[x][y];
+}
+
+// Tìm đường đi từ điểm xuất phát đến điểm đích
+vector<Position> findPath(const vector<vector<int>> &matrix) {
+    int rows = matrix.size();
+    int cols = matrix[0].size();
+
+    // Điểm xuất phát và điểm đích là cố định
+    Position start = {0, 0};
+    Position end = {9, 9};
+
+    // Khởi tạo ma trận visited để theo dõi các ô đã được đi qua
+    vector<vector<bool>> visited(rows, vector<bool>(cols, false));
+
+    // Hướng di chuyển ban đầu
+    vector<Position> directions = {{0,  1},
+                                   {1,  0},
+                                   {0,  -1},
+                                   {-1, 0}};
+
+    // Lưu trữ kết quả
+    vector<Position> path;
+    path.push_back(start);
+
+    // Quy hoạch động để tìm đường đi
+    Position current = start;
+    while (current.x != end.x || current.y != end.y) {
+        bool foundMove = false;
+
+        for (const auto &direction: directions) {
+            int new_x = current.x + direction.x;
+            int new_y = current.y + direction.y;
+
+            if (isValidMove(new_x, new_y, matrix, visited)) {
+                visited[new_x][new_y] = true;
+                path.push_back({new_x, new_y});
+                current = {new_x, new_y};
+                foundMove = true;
+                break;
+            }
+        }
+
+        if (!foundMove) {
+            // Nếu không tìm thấy bước di chuyển hợp lệ, quay lui
+            path.pop_back();
+            if (!path.empty()) {
+                current = path.back();
+            } else {
+                // Không còn đường để quay lui
+                break;
+            }
+        }
+    }
+
+    return path;
+}
+
+
 void checkValid() {
     for (int i = 0; i < mapList.size(); i++) {
         vector<Object> curList = mapList[i].getList();
@@ -561,7 +627,8 @@ void checkValid() {
                 cout << "Cannot open file" << endl;
             }
             if (fileSize > stoi(line)) {
-                cout << "Invalid defined byte size in file " << curList[j].getName() << ".obj (" << fileSize << " > " << line << ") \n";
+                cout << "Invalid defined byte size in file " << curList[j].getName() << ".obj (" << fileSize << " > "
+                     << line << ") \n";
             }
         }
     }
@@ -570,7 +637,8 @@ void checkValid() {
 int main() {
     readFile("map.txt");
     int choice;
-    do {
+
+    while (true) {
         cout << "MENU\n";
         cout << "0:Print all map.\n";
         cout << "1:Play.\n";
@@ -582,41 +650,56 @@ int main() {
         cout << "Enter choice:";
         cin >> choice;
         cin.ignore();
+        if (choice == 0) {
+            printMap();
+        } else if (choice == 1) {
+            play();
+        } else if (choice == 2) {
+            mapList[0].getElementAt(0, 0);
 
-        switch (choice) {
-            case 0 :
-                printMap();
-                break;
-            case 1:
-                play();
-                break;
-            case 2 :
+            // Khởi tạo vector
+            vector<vector<int>> inputMatrix3;
+            // Hỏi người dùng muốn bắt đầu từ Map nào
+            // int mapfirstIndex;
+            // cout <<"Please enter your start map you want to find path: ";
+            // cin >> mapfirstIndex;
+            // // cout <<"Please enter your last map you want to finish : ";
+            // cout <<endl;
+            for (int i = 0; i < 10; i++) {
+                vector<int> row;
+                for (int j = 0; j < 10; j++) {
+                    if (mapList[0].getElementAt(i, j) == "0") {
+                        row.push_back(0);
+                    } else {
+                        row.push_back(1);
+                    }
+                }
+                inputMatrix3.push_back(row);
+            }
+            // In dữ liệu của inputMatrix3 để kiểm tra
+            for (const auto &row: inputMatrix3) {
+                for (int value: row) {
+                    cout << value << " ";
+                }
+                cout << endl;
+            }
+            vector<Position> path = findPath(inputMatrix3);
 
-                break;
-            case 3:
-                createmap();
-                break;
-            case 4 :
-                changemap();
-                break;
-            case 5:
-                checkValid();
-                break;
-            case 6 :
-                cout << "ENDING PROGRAM!" << endl;
-                break;
+            // In đường đi
+            for (int i = 0; i < path.size(); i++) {
+                cout << "(" << path[i].x << ", " << path[i].y << ") ";
+            }
+
+
+        } else if (choice == 3) {
+            createmap();
+        } else if (choice == 4) {
+            changemap();
+        } else if (choice == 5) {
+            checkValid();
+        } else if (choice == 6) {
+            cout << "ENDING PROGRAM!" << endl;
+            break;
         }
-    } while (choice != 6);
-
-//        std::string file_path = "model"; // Thay thế bằng đường dẫn file của bạn
-//
-//        if (fs::exists(file_path)) {
-//            std::cout << "File exist" << std::endl;
-//        } else {
-//            std::cout << "File not exist." << std::endl;
-//        }
-//
-//        string file = "model/TREE0.obj";
-//        auto file_size = fs::file_size(file);
-//        std::cout << "File's size: " << file_size << " bytes." << std::endl;
+    }
 }

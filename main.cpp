@@ -16,11 +16,12 @@ private:
 
 public:
     Object() {
+        srand(time(NULL));
         path = "";
         name = "";
         posX = "0"; posY = "0"; posZ = "0";
         scaleX = "1"; scaleY = "1"; scaleZ = "1";
-        rotX = "0"; rotY = "0"; rotZ = "0";
+        rotX = to_string(rand() % 361); rotY = to_string(rand() % 361); rotZ = to_string(rand() % 361);
     }
 
 
@@ -58,23 +59,23 @@ public:
     // Các phương thức setter
     void setName(string n) { name = n; }
 
-    void setPosX(string x) { posX = x; }
+    void setPosX(string x) { if(stoi(x) < 10 ) {posX = x; } else cout << "Invalid value";}
 
-    void setPosY(string y) { posY = y; }
+    void setPosY(string y) { if(stoi(y) < 10 ) {posY = y; } else cout << "Invalid value"; }
 
-    void setPosZ(string z) { posZ = z; }
+    void setPosZ(string z) { if(stoi(z) < 10 ) {posZ = z; } else cout << "Invalid value"; }
 
-    void setScaleX(string x) { scaleX = x; }
+    void setScaleX(string x) { if(stoi(x) < 10 ) {scaleX = x; } else cout << "Invalid value"; }
 
-    void setScaleY(string y) { scaleY = y; }
+    void setScaleY(string y) { if(stoi(y) < 10 ) {scaleY = y; } else cout << "Invalid value"; }
 
-    void setScaleZ(string z) { scaleZ = z; }
+    void setScaleZ(string z) { if(stoi(z) < 10 ) {scaleX = z; } else cout << "Invalid value"; }
 
-    void setRotX(string x) { rotX = x; }
+    void setRotX(string x) { if(stoi(x) < 10 ) {rotX = x; } else cout << "Invalid value"; }
 
-    void setRotY(string y) { rotY = y; }
+    void setRotY(string y) { if(stoi(y) < 10 ) {rotX = y; } else cout << "Invalid value"; }
 
-    void setRotZ(string z) { rotZ = z; }
+    void setRotZ(string z) { if(stoi(z) < 10 ) {rotX = z; } else cout << "Invalid value"; }
 };
 
 
@@ -111,9 +112,6 @@ public:
 
     void setObjList(vector<Object> list) {
         objList = list;
-    }
-
-    void setMatrix() {
         for (int i = 0; i < objList.size(); i++) {
             int x = stoi(objList[i].getPosX());
             int y = stoi(objList[i].getPosY());
@@ -125,6 +123,7 @@ public:
             }
         }
     }
+
 
     void printMatrix() {
         cout << "Map " << name << endl;
@@ -171,7 +170,6 @@ public:
 
     void addObject(Object obj) {
         objList.push_back(obj);
-        setMatrix();
     }
 
     void printallObjects() {
@@ -186,14 +184,14 @@ public:
         }
     }
 
-    void printanObject(int index)
+    void printAnObject(int index)
     {
         cout << "  Name: " << objList[index].getName() << endl;
         cout << "  Position: (" << objList[index].getPosX() << ", " << objList[index].getPosY() << ", " << objList[index].getPosZ() << ")" << endl;
         cout << "  Scale: (" << objList[index].getScaleX() << ", " << objList[index].getScaleY() << ", " << objList[index].getScaleZ() << ")" << endl;
         cout << "  Rotation: (" << objList[index].getRotX() << ", " << objList[index].getRotY() << ", " << objList[index].getRotZ() << ")" << endl;
     }
-    int totalobj(){
+    int totalObj(){
         return objList.size();
     }
 };
@@ -217,8 +215,7 @@ bool readFile(const string &filename) {
     while (getline(input, line)) {
         if (line.empty()) { // Khi gặp một dòng trống(chuyển sang map khác)
             if (!curMap.getIndex().empty()) { // Kiểm tra xem có bản đồ hiện tại không
-                curMap.setObj(curObjList);
-                curMap.setMatrix();
+                curMap.setObjList(curObjList);
                 mapList.push_back(curMap); // Lưu bản đồ hiện tại vào danh sách
                 curMap = Map(""); // Reset bản đồ hiện tại
                 curObjList.clear();
@@ -252,8 +249,7 @@ bool readFile(const string &filename) {
     }
 
     if (!curMap.getIndex().empty()) { // Lưu bản đồ cuối cùng nếu có
-        curMap.setObj(curObjList);
-        curMap.setMatrix();
+        curMap.setObjList(curObjList);
         mapList.push_back(curMap);
 
     }
@@ -420,13 +416,13 @@ void changemap() {
 
     // Select an object
     do {
-        cout << "Select an object (1 - " << mapList[mapIndex - 1].totalobj() << "): ";
+        cout << "Select an object (1 - " << mapList[mapIndex - 1].totalObj() << "): ";
         cin >> objectIndex;
-    } while (objectIndex < 1 || objectIndex > mapList[mapIndex - 1].totalobj());
+    } while (objectIndex < 1 || objectIndex > mapList[mapIndex - 1].totalObj());
 
     // Display the current attributes of the selected object
     cout << "Current attributes of the selected object:\n";
-    mapList[mapIndex - 1].printanObject(objectIndex - 1);
+    mapList[mapIndex - 1].printAnObject(objectIndex - 1);
 
     // Choose the type of attribute to change
     cout << "Choose the type of attribute to change:\n";
@@ -439,12 +435,13 @@ void changemap() {
 
     // Perform the change based on the chosen option
     switch (option) {
+
         case 1: // Change name
         {
             string newName;
             cout << "Enter the new name for the object: ";
             cin >> newName;
-            mapList[mapIndex - 1].getList()[objectIndex - 1].setName(newName);
+            mapList[mapIndex - 1].getObjList()[objectIndex - 1].setName(newName);
             break;
         }
         case 2: // Change position
@@ -456,9 +453,9 @@ void changemap() {
             cin >> newY;
             cout << "Enter the new Z position: ";
             cin >> newZ;
-            mapList[mapIndex - 1].getList()[objectIndex - 1].setPosX(newX);
-            mapList[mapIndex - 1].getList()[objectIndex - 1].setPosY(newY);
-            mapList[mapIndex - 1].getList()[objectIndex - 1].setPosZ(newZ);
+            mapList[mapIndex - 1].getObjList()[objectIndex - 1].setPosX(newX);
+            mapList[mapIndex - 1].getObjList()[objectIndex - 1].setPosY(newY);
+            mapList[mapIndex - 1].getObjList()[objectIndex - 1].setPosZ(newZ);
             break;
         }
         case 3: // Change scale
@@ -470,9 +467,9 @@ void changemap() {
             cin >> newScaleY;
             cout << "Enter the new Z scale: ";
             cin >> newScaleZ;
-            mapList[mapIndex - 1].getList()[objectIndex - 1].setScaleX(newScaleX);
-            mapList[mapIndex - 1].getList()[objectIndex - 1].setScaleY(newScaleY);
-            mapList[mapIndex - 1].getList()[objectIndex - 1].setScaleZ(newScaleZ);
+            mapList[mapIndex - 1].getObjList()[objectIndex - 1].setScaleX(newScaleX);
+            mapList[mapIndex - 1].getObjList()[objectIndex - 1].setScaleY(newScaleY);
+            mapList[mapIndex - 1].getObjList()[objectIndex - 1].setScaleZ(newScaleZ);
             break;
         }
         case 4: // Change rotation
@@ -484,9 +481,9 @@ void changemap() {
             cin >> newRotY;
             cout << "Enter the new Z rotation: ";
             cin >> newRotZ;
-            mapList[mapIndex - 1].getList()[objectIndex - 1].setRotX(newRotX);
-            mapList[mapIndex - 1].getList()[objectIndex - 1].setRotY(newRotY);
-            mapList[mapIndex - 1].getList()[objectIndex - 1].setRotZ(newRotZ);
+            mapList[mapIndex - 1].getObjList()[objectIndex - 1].setRotX(newRotX);
+            mapList[mapIndex - 1].getObjList()[objectIndex - 1].setRotY(newRotY);
+            mapList[mapIndex - 1].getObjList()[objectIndex - 1].setRotZ(newRotZ);
             break;
         }
         default:
@@ -496,11 +493,11 @@ void changemap() {
 
     // Display the updated attributes of the selected object
     cout << "Updated attributes of the selected object:\n";
-    mapList[mapIndex - 1].printanObject(objectIndex - 1);
+    mapList[mapIndex - 1].printAnObject(objectIndex - 1);
 }
 
 int main() {
-    readFile("map.txt");
+//    readFile("map.txt");
 //    int choice;
 //    while(true) {
 //        cout << "MENU\n";
@@ -535,5 +532,5 @@ int main() {
 //            break;
 //        }
 //    }
-    mapList[0].g
+
 }

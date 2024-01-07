@@ -94,10 +94,12 @@ private:
     vector<Object> objList;
     string matrix[10][10];
 public:
+    //Constructor
     Map(string index) {
         name = index;
     }
-
+    
+    //Getter
     string getIndex() {
         return name;
     };
@@ -110,6 +112,11 @@ public:
         return objList;
     }
 
+    string getElementAt(int x, int y) {
+        return matrix[x][y];
+    }
+    
+    // Setter
     void setName(string n) { name = n; };
 
     void setObjList(vector<Object> list) {
@@ -133,12 +140,7 @@ public:
         }
     }
 
-
-    string getElementAt(int x, int y) {
-        return matrix[x][y];
-    }
-
-
+    // Method
     void printMatrix() {
         cout << "Map " << name << endl;
         for (int i = 0; i < 10; i++) {
@@ -155,7 +157,7 @@ public:
         cout << endl;
     }
 
-    int objtotal(int &opt) {
+    int objTotal(int &opt) {
 
         int count = 0;
         if (opt == 1) {
@@ -182,7 +184,7 @@ public:
         setMatrix();
     }
 
-    void printallObjects() {
+    void printAllObjects() {
         cout << "Objects in Map " << name << ":" << endl;
         for (int i = 0; i < objList.size(); i++) {
             cout << "  Object " << i + 1 << ":" << endl;
@@ -197,7 +199,7 @@ public:
         }
     }
 
-    void printanObject(int index) {
+    void printAnObject(int index) {
         cout << "  Name: " << objList[index].getName() << endl;
         cout << "  Position: (" << objList[index].getPosX() << ", " << objList[index].getPosY() << ", "
              << objList[index].getPosZ() << ")" << endl;
@@ -207,7 +209,7 @@ public:
              << objList[index].getRotZ() << ")" << endl;
     }
 
-    int totalobj() {
+    int totalObj() {
         return objList.size();
     }
 
@@ -283,7 +285,7 @@ void printMatrix(string matrix[10][10]) {
             if (matrix[i][j] == "0") {
                 cout << setw(6) << matrix[i][j][0] << matrix[i][j][matrix[i][j].size() - 1];
             } else {
-                // Print the content with brackets and ensure it's padded to width 5
+                // Padding 4
                 cout << setw(4) << "[" << matrix[i][j][0] << matrix[i][j][matrix[i][j].size() - 1] << "]";
             }
         }
@@ -320,6 +322,7 @@ void play() {
                         matrix[i][j] = matrixPtr[i][j];
                     }
                 }
+                // Thêm nhân vật
                 matrix[0][0] = "NV";
                 curX = 0;
                 curY = 0;
@@ -327,14 +330,15 @@ void play() {
             }
         }
         flag = true;
-        cout << "Map" << mapList[index].getIndex();
+        cout << "Map" << mapList[index].getIndex() << endl;
         printMatrix(matrix);
-        cout << "Input W A S D to move";
+        cout << "Input w a s d to move \n" << "e to exit \n";
+        
         char move;
         cin >> move;
         switch (move) {
             case 'w':
-                if (curX == 0 || matrix[curX - 1][curY] != "0") continue;
+                if (curX == 0 || matrix[curX - 1][curY] != "0" ) continue;
                 matrix[curX][curY] = "0";
                 matrix[curX - 1][curY] = "NV";
                 curX--;
@@ -346,13 +350,13 @@ void play() {
                 curY--;
                 break;
             case 's':
-                if (curX == 9 || matrix[curX + 1][curY] != "0") continue;
+                if (curX == 9 || (matrix[curX + 1][curY] != "0" && matrix[curX + 1][curY].substr(0, 4) != "GOTO")) continue;
                 matrix[curX][curY] = "0";
                 matrix[curX + 1][curY] = "NV";
                 curX++;
                 break;
             case 'd':
-                if (curY == 9 || matrix[curX][curY + 1] != "0") continue;
+                if (curY == 9 || (matrix[curX][curY + 1] != "0" && matrix[curX][curY + 1].substr(0, 4) != "GOTO")) continue;
                 matrix[curX][curY] = "0";
                 matrix[curX][curY + 1] = "NV";
                 curY++;
@@ -423,11 +427,11 @@ vector<Position> findPath(const vector<vector<int>>& matrix) {
 
 
 //Function 3:
-void createmap() {
+void createMap() {
     string name_map;
     cout << "Enter a name for a new map:";
     getline(cin, name_map);
-    Map mymap(name_map);
+    Map myMap(name_map);
     int index = mapList.size();
     cout << "Succesfully create a new map name:" << name_map << endl;
 
@@ -450,28 +454,30 @@ void createmap() {
             cin >> poZ;
 
             if (poX >= 0 && poX < 10 && poY >= 0 && poY < 10) {
-                Object myobject;
+                Object myObject;
                 if (option == 1) {
-                    int tree_total = mymap.objtotal(option);
-                    myobject.setName("TREE" + to_string(tree_total));
+                    int tree_total = myMap.objTotal(option);
+                    myObject.setName("TREE" + to_string(tree_total));
                 } else if (option == 2) {
-                    int house_total = mymap.objtotal(option);
-                    myobject.setName("HOUSE" + to_string(house_total));
+                    int house_total = myMap.objTotal(option);
+                    myObject.setName("HOUSE" + to_string(house_total));
                 } else if (option == 3) {
-                    int car_total = mymap.objtotal(option);
-                    myobject.setName("CAR" + to_string(car_total));
+                    int car_total = myMap.objTotal(option);
+                    myObject.setName("CAR" + to_string(car_total));
                 }
 
-                myobject.setPosX(to_string(poX));
-                myobject.setPosY(to_string(poY));
-                myobject.setPosZ(to_string(poZ));
-                mymap.addObject(myobject);
+                myObject.setPosX(to_string(poX));
+                myObject.setPosY(to_string(poY));
+                myObject.setPosZ(to_string(poZ));
+                myMap.addObject(myObject);
+
+                
             } else {
                 cout << "Invalid coordinates. Coordinates must be between 0 and 9." << endl;
             }
         }
     } while (continues == 'Y');
-    mapList.push_back(mymap);
+    mapList.push_back(myMap);
     printMap();
 }
 
@@ -488,7 +494,7 @@ bool isPositionValid(int x, int y, int z, vector<Object> &objList) {
     return true;
 }
 
-void changemap() {
+void changeMap() {
     int mapIndex, objectIndex, option;
 
     // Display available maps
@@ -506,17 +512,17 @@ void changemap() {
     } while (mapIndex < 1 || mapIndex > mapList.size());
 
     // Display objects in the selected map
-    mapList[mapIndex - 1].printallObjects();
+    mapList[mapIndex - 1].printAllObjects();
 
     // Select an object
     do {
-        cout << "Select an object (1 - " << mapList[mapIndex - 1].totalobj() << "): ";
+        cout << "Select an object (1 - " << mapList[mapIndex - 1].totalObj() << "): ";
         cin >> objectIndex;
-    } while (objectIndex < 1 || objectIndex > mapList[mapIndex - 1].totalobj());
+    } while (objectIndex < 1 || objectIndex > mapList[mapIndex - 1].totalObj());
 
     // Display the current attributes of the selected object
     cout << "Current attributes of the selected object:\n";
-    mapList[mapIndex - 1].printanObject(objectIndex - 1);
+    mapList[mapIndex - 1].printAnObject(objectIndex - 1);
 
     // Choose the type of attribute to change
     cout << "Choose the type of attribute to change:\n";
@@ -610,7 +616,7 @@ void changemap() {
 
     // Display the updated attributes of the selected object
     cout << "Updated attributes of the selected object:\n";
-    mapList[mapIndex - 1].printanObject(objectIndex - 1);
+    mapList[mapIndex - 1].printAnObject(objectIndex - 1);
 
     mapList[mapIndex - 1].printMatrix();
 }
@@ -689,7 +695,7 @@ int main() {
     readFile("map.txt");
     int choice;
 
-    while (true) {
+    do {
         cout << "MENU\n";
         cout << "0:Print all map.\n";
         cout << "1:Play.\n";
@@ -701,6 +707,7 @@ int main() {
         cout << "Enter choice:";
         cin >> choice;
         cin.ignore();
+
         if (choice == 0) {
             printMap();
         }
@@ -757,17 +764,17 @@ int main() {
         
         else if (choice == 3)
         {
-            createmap();
+            createMap();
         }
 
         else if (choice == 4)
         {
-            changemap();
+            changeMap();
         }
 
         else if (choice == 5)
         {
-
+            checkValid();
         }
 
         else if (choice == 6)
@@ -776,5 +783,5 @@ int main() {
             saveToFile("map.txt",mapList);
             break;
         }
-    }
+    } while(choice != 6);
 }

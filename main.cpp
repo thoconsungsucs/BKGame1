@@ -54,8 +54,6 @@ public:
     string getRotZ() { return rotZ; }
 
     // Các phương thức setter
-    void setPath(string n) { path = n; }
-
     void setName(string n) { name = n; }
 
     void setPosX(string x) { posX = x; }
@@ -97,7 +95,6 @@ public:
         name = index;
     }
 
-
     string getIndex() {
         return name;
     };
@@ -109,8 +106,6 @@ public:
     vector<Object> getList() {
         return objList;
     }
-
-    void setName(string n) {name = n;};
 
     void setObj(vector<Object> list) {
         objList = list;
@@ -367,36 +362,31 @@ void createmap(){
         continues = toupper(continues);
         if(continues == 'Y')
         {
-            int option,poX,poY,poZ;
+            int option;
             cout << "1.Tree\n" << "2.House\n" << "3.Car\n";
             cout << "Enter option: ";
             cin >> option;
+            int poX,poY;
             cout << "Enter position X: ";
             cin >> poX;
             cout << "Enter position Y: ";
             cin >> poY;
-            cout << "Enter position Z: ";
-            cin >> poZ;
 
             if (poX >= 0 && poX < 10 && poY >= 0 && poY < 10) {
                 Object myobject;
                 if (option == 1) {
                     int tree_total = mymap.objtotal(option);
                     myobject.setName("TREE" + to_string(tree_total));
-                    myobject.setPath("model\\TREE" + to_string(tree_total) + ".obj");
                 } else if (option == 2) {
                     int house_total = mymap.objtotal(option);
                     myobject.setName("HOUSE" + to_string(house_total));
-                    myobject.setPath("model\\HOUSE" + to_string(house_total) + ".obj");
                 } else if (option == 3) {
                     int car_total = mymap.objtotal(option);
                     myobject.setName("CAR" + to_string(car_total));
-                    myobject.setPath("model\\CAR" + to_string(car_total) + ".obj");
                 }
 
                 myobject.setPosX(to_string(poX));
                 myobject.setPosY(to_string(poY));
-                myobject.setPosZ(to_string(poZ));
                 mymap.addObject(myobject);
             }
             else {
@@ -464,14 +454,9 @@ void changemap() {
             cin >> newY;
             cout << "Enter the new Z position: ";
             cin >> newZ;
-
-            vector<Object> newObjList;
-            newObjList = mapList[mapIndex - 1].getList();
-            newObjList[objectIndex - 1].setPosX(newX);
-            newObjList[objectIndex - 1].setPosY(newY);
-            newObjList[objectIndex - 1].setPosZ(newZ);
-            mapList[mapIndex - 1].setObj(newObjList);
-            mapList[mapIndex - 1].setMatrix();
+            mapList[mapIndex - 1].getList()[objectIndex - 1].setPosX(newX);
+            mapList[mapIndex - 1].getList()[objectIndex - 1].setPosY(newY);
+            mapList[mapIndex - 1].getList()[objectIndex - 1].setPosZ(newZ);
             break;
         }
         case 3: // Change scale
@@ -483,12 +468,9 @@ void changemap() {
             cin >> newScaleY;
             cout << "Enter the new Z scale: ";
             cin >> newScaleZ;
-            vector<Object> newObjList;
-            newObjList = mapList[mapIndex - 1].getList();
-            newObjList[objectIndex - 1].setScaleX(newScaleX);
-            newObjList[objectIndex - 1].setScaleY(newScaleY);
-            newObjList[objectIndex - 1].setScaleZ(newScaleZ);
-            mapList[mapIndex - 1].setObj(newObjList);
+            mapList[mapIndex - 1].getList()[objectIndex - 1].setScaleX(newScaleX);
+            mapList[mapIndex - 1].getList()[objectIndex - 1].setScaleY(newScaleY);
+            mapList[mapIndex - 1].getList()[objectIndex - 1].setScaleZ(newScaleZ);
             break;
         }
         case 4: // Change rotation
@@ -500,12 +482,9 @@ void changemap() {
             cin >> newRotY;
             cout << "Enter the new Z rotation: ";
             cin >> newRotZ;
-            vector<Object> newObjList;
-            newObjList = mapList[mapIndex - 1].getList();
-            newObjList[objectIndex - 1].setRotX(newRotX);
-            newObjList[objectIndex - 1].setRotY(newRotY);
-            newObjList[objectIndex - 1].setRotZ(newRotZ);
-            mapList[mapIndex - 1].setObj(newObjList);
+            mapList[mapIndex - 1].getList()[objectIndex - 1].setRotX(newRotX);
+            mapList[mapIndex - 1].getList()[objectIndex - 1].setRotY(newRotY);
+            mapList[mapIndex - 1].getList()[objectIndex - 1].setRotZ(newRotZ);
             break;
         }
         default:
@@ -514,9 +493,8 @@ void changemap() {
     }
 
     // Display the updated attributes of the selected object
-    cout << "Updated successfully:\n";
-//    mapList[mapIndex - 1].printanObject(objectIndex - 1);
-    mapList[mapIndex - 1].printallObjects();
+    cout << "Updated attributes of the selected object:\n";
+    mapList[mapIndex - 1].printanObject(objectIndex - 1);
 }
 
 int main() {
@@ -524,7 +502,6 @@ int main() {
     int choice;
     while(true) {
         cout << "MENU\n";
-        cout << "0.Print all map.\n";
         cout << "1:Play.\n";
         cout << "2:Find path.\n";
         cout << "3:Create map.\n";
@@ -534,13 +511,9 @@ int main() {
         cout << "Enter choice:";
         cin >> choice;
         cin.ignore();
-        if (choice == 0)
+        if (choice == 1)
         {
 
-        }
-        else if (choice == 1)
-        {
-            play();
         }
         else if (choice == 2)
         {

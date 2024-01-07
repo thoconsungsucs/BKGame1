@@ -109,6 +109,12 @@ TREE0
 1,1,1
 0,0,0
 model\TREE0.obj
+OBJ
+TREE1
+2,2,2
+1,1,1
+0,0,0
+model\TREE1.obj
 
 MAPthanh dzai
 OBJ

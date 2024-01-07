@@ -663,6 +663,10 @@ int main() {
         {
             changemap();
         }
+        else if (choice == 5)
+        {
+
+        }
         else if (choice == 6)
         {
             cout << "ENDING PROGRAM!" << endl;

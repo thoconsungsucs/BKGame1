@@ -158,7 +158,6 @@ public:
     }
 
     int objTotal(int &opt) {
-
         int count = 0;
         if (opt == 1) {
             for (int i = 0; i < objList.size(); i++) {
@@ -172,7 +171,12 @@ public:
             }
         } else if (opt == 3) {
             for (int i = 0; i < objList.size(); i++) {
-                if (objList[i].getName().substr(0, 4) == "CAR")
+                if (objList[i].getName().substr(0, 3) == "CAR")
+                    count++;
+            }
+        } else if (opt == 4) {
+            for (int i = 0; i < objList.size(); i++) {
+                if (objList[i].getName().substr(0, 4) == "GOTO")
                     count++;
             }
         }
@@ -503,17 +507,10 @@ void printMapName(){
 
 void addObjectInMap(int mapIndex) {
     mapIndex--; // Chỉ số mảng bắt đầu từ 0
-
-    // Kiểm tra xem chỉ số có hợp lệ không
-    if (mapIndex < 0 || mapIndex >= mapList.size()) {
-        cout << "Invalid map selection.\n";
-        return;
-    }
-
     // Nhập thông tin đối tượng
     string posX, posY, posZ;
     int option;
-    cout << "1.Tree\n" << "2.House\n" << "3.Car\n";
+    cout << "1.Tree\n" << "2.House\n" << "3.Car\n" << "4.GOTO\n";
     cout << "Enter option: ";
     cin >> option;
     Object myObject;
@@ -542,21 +539,44 @@ void addObjectInMap(int mapIndex) {
         } else if (option == 3) {
             int car_total = mapList[mapIndex].objTotal(option);
             myObject.setName("CAR" + to_string(car_total));
+        } else if (option == 4) {
+            int car_total = mapList[mapIndex].objTotal(option);
+            myObject.setName("GOTO" + to_string(car_total));
         }
-
         myObject.setPosX(posX);
         myObject.setPosY(posY);
         myObject.setPosZ(posZ);
 
         // Tạo đối tượng mới và thêm vào bản đồ
         mapList[mapIndex].addObject(myObject);
+        mapList[mapIndex].setMatrix();
         mapList[mapIndex].printAllObjects();
         cout << "Object added successfully to the map: " << mapList[mapIndex].getIndex() << endl;
     }
 }
 
+void removeObjectInMap(int mapIndex) {
+    int objectIndex = 0;
+    mapIndex--;
+    mapList[mapIndex].printAllObjects();
+
+    do{
+        cout << "Select an object (1 - " << mapList[mapIndex].totalObj() << "): ";
+        cin >> objectIndex;
+    } while (objectIndex < 1 || objectIndex > mapList[mapIndex].totalObj());
+    objectIndex--;
+    vector<Object> objList;
+    objList = mapList[mapIndex].getList();
+    objList.erase(objList.begin() + objectIndex);
+    mapList[mapIndex].setObjList(objList);
+    mapList[mapIndex].setMatrix();
+    cout << "Object removed successfully in map: " << mapList[mapIndex].getIndex() << endl;
+    mapList[mapIndex].printAllObjects();
+}
+
 void changeMap() {
     int mapIndex, objectIndex, option,opt;
+    bool continues = true;
 
     // Display available maps
     printMapName();
@@ -567,123 +587,134 @@ void changeMap() {
         cin >> mapIndex;
     } while (mapIndex < 1 || mapIndex > mapList.size());
 
-    cout << "1.Add Object in map.\n";
-    cout << "2.Change Object in map.\n";
-    cout << "Enter option: ";
-    cin >> opt;
-    if (opt == 1){
-        addObjectInMap(mapIndex);
-    }
-    else if (opt == 2) {
-        // Display objects in the selected map
-        mapList[mapIndex - 1].printAllObjects();
+    do {
+        cout << "1.Add Object in map.\n";
+        cout << "2.Change Object in map.\n";
+        cout << "3.Remove Object in map.\n";
+        cout << "4.Exit.\n";
+        cout << "Enter option: ";
+        cin >> opt;
+        if (opt == 1){
+            addObjectInMap(mapIndex);
+        }
+        else if (opt == 2) {
+            // Display objects in the selected map
+            mapList[mapIndex - 1].printAllObjects();
 
-        // Select an object
-        do {
-            cout << "Select an object (1 - " << mapList[mapIndex - 1].totalObj() << "): ";
-            cin >> objectIndex;
-        } while (objectIndex < 1 || objectIndex > mapList[mapIndex - 1].totalObj());
+            // Select an object
+            do {
+                cout << "Select an object (1 - " << mapList[mapIndex - 1].totalObj() << "): ";
+                cin >> objectIndex;
+            } while (objectIndex < 1 || objectIndex > mapList[mapIndex - 1].totalObj());
 
-        // Display the current attributes of the selected object
-        cout << "Current attributes of the selected object:\n";
-        mapList[mapIndex - 1].printAnObject(objectIndex - 1);
+            // Display the current attributes of the selected object
+            cout << "Current attributes of the selected object:\n";
+            mapList[mapIndex - 1].printAnObject(objectIndex - 1);
 
-        // Choose the type of attribute to change
-        cout << "Choose the type of attribute to change:\n";
-        cout << "1. Change name\n";
-        cout << "2. Change position\n";
-        cout << "3. Change scale\n";
-        cout << "4. Change rotation\n";
-        cout << "Enter your choice (1 - 4): ";
-        cin >> option;
+            // Choose the type of attribute to change
+            cout << "Choose the type of attribute to change:\n";
+            cout << "1. Change name\n";
+            cout << "2. Change position\n";
+            cout << "3. Change scale\n";
+            cout << "4. Change rotation\n";
+            cout << "Enter your choice (1 - 4): ";
+            cin >> option;
 
-        // Perform the change based on the chosen option
-        switch (option) {
-            case 1: // Change name
-            {
-                string newName;
-                cout << "Enter the new name for the object: ";
-                cin >> newName;
-                mapList[mapIndex - 1].getList()[objectIndex - 1].setName(newName);
-                break;
+            // Perform the change based on the chosen option
+            switch (option) {
+                case 1: // Change name
+                {
+                    string newName;
+                    cout << "Enter the new name for the object: ";
+                    cin >> newName;
+                    mapList[mapIndex - 1].getList()[objectIndex - 1].setName(newName);
+                    break;
+                }
+                case 2: // Change position
+                {
+                    vector<Object> newObjList;
+
+                    string  newX,newY,newZ;
+
+                    newObjList = mapList[mapIndex - 1].getList();
+
+                    do {
+                        cout << "Enter the new X position: ";
+                        cin >> newX;
+                        cout << "Enter the new Y position: ";
+                        cin >> newY;
+                        cout << "Enter the new Z position: ";
+                        cin >> newZ;
+
+                        if (!isPositionValid(stoi(newX),stoi(newY),stoi(newZ),newObjList)) {
+                            cout << "Invalid position. Either out of bounds or position is already taken. Please try again.\n";
+                        } else {
+                            break;
+                        }
+                    } while (true);
+
+                    newObjList[objectIndex - 1].setPosX(newX);
+                    newObjList[objectIndex - 1].setPosY(newY);
+                    newObjList[objectIndex - 1].setPosZ(newZ);
+                    mapList[mapIndex - 1].setObjList(newObjList);
+                    mapList[mapIndex - 1].setMatrix();
+                    break;
+                }
+                case 3: // Change scale
+                {
+                    string newScaleX, newScaleY, newScaleZ;
+                    cout << "Enter the new X scale: ";
+                    cin >> newScaleX;
+                    cout << "Enter the new Y scale: ";
+                    cin >> newScaleY;
+                    cout << "Enter the new Z scale: ";
+                    cin >> newScaleZ;
+
+                    vector<Object> newObjList;
+                    newObjList = mapList[mapIndex - 1].getList();
+                    newObjList[objectIndex - 1].setScaleX(newScaleX);
+                    newObjList[objectIndex - 1].setScaleY(newScaleY);
+                    newObjList[objectIndex - 1].setScaleZ(newScaleZ);
+                    mapList[mapIndex - 1].setObjList(newObjList);
+                    break;
+                }
+                case 4: // Change rotation
+                {
+                    string newRotX, newRotY, newRotZ;
+                    cout << "Enter the new X rotation: ";
+                    cin >> newRotX;
+                    cout << "Enter the new Y rotation: ";
+                    cin >> newRotY;
+                    cout << "Enter the new Z rotation: ";
+                    cin >> newRotZ;
+
+                    vector<Object> newObjList;
+                    newObjList = mapList[mapIndex - 1].getList();
+                    newObjList[objectIndex - 1].setRotX(newRotX);
+                    newObjList[objectIndex - 1].setRotY(newRotY);
+                    newObjList[objectIndex - 1].setRotZ(newRotZ);
+                    mapList[mapIndex - 1].setObjList(newObjList);
+                    break;
+                }
+                default:
+                    cout << "Invalid choice.";
+                    break;
             }
-            case 2: // Change position
-            {
-                vector<Object> newObjList;
 
-                string  newX,newY,newZ;
+            // Display the updated attributes of the selected object
+            cout << "Updated attributes of the selected object:\n";
+            mapList[mapIndex - 1].printAnObject(objectIndex - 1);
 
-                newObjList = mapList[mapIndex - 1].getList();
-
-                do {
-                    cout << "Enter the new X position: ";
-                    cin >> newX;
-                    cout << "Enter the new Y position: ";
-                    cin >> newY;
-                    cout << "Enter the new Z position: ";
-                    cin >> newZ;
-
-                    if (!isPositionValid(stoi(newX),stoi(newY),stoi(newZ),newObjList)) {
-                        cout << "Invalid position. Either out of bounds or position is already taken. Please try again.\n";
-                    } else {
-                        break;
-                    }
-                } while (true);
-
-                newObjList[objectIndex - 1].setPosX(newX);
-                newObjList[objectIndex - 1].setPosY(newY);
-                newObjList[objectIndex - 1].setPosZ(newZ);
-                mapList[mapIndex - 1].setObjList(newObjList);
-                mapList[mapIndex - 1].setMatrix();
-                break;
-            }
-            case 3: // Change scale
-            {
-                string newScaleX, newScaleY, newScaleZ;
-                cout << "Enter the new X scale: ";
-                cin >> newScaleX;
-                cout << "Enter the new Y scale: ";
-                cin >> newScaleY;
-                cout << "Enter the new Z scale: ";
-                cin >> newScaleZ;
-
-                vector<Object> newObjList;
-                newObjList = mapList[mapIndex - 1].getList();
-                newObjList[objectIndex - 1].setScaleX(newScaleX);
-                newObjList[objectIndex - 1].setScaleY(newScaleY);
-                newObjList[objectIndex - 1].setScaleZ(newScaleZ);
-                mapList[mapIndex - 1].setObjList(newObjList);
-                break;
-            }
-            case 4: // Change rotation
-            {
-                string newRotX, newRotY, newRotZ;
-                cout << "Enter the new X rotation: ";
-                cin >> newRotX;
-                cout << "Enter the new Y rotation: ";
-                cin >> newRotY;
-                cout << "Enter the new Z rotation: ";
-                cin >> newRotZ;
-
-                vector<Object> newObjList;
-                newObjList = mapList[mapIndex - 1].getList();
-                newObjList[objectIndex - 1].setRotX(newRotX);
-                newObjList[objectIndex - 1].setRotY(newRotY);
-                newObjList[objectIndex - 1].setRotZ(newRotZ);
-                mapList[mapIndex - 1].setObjList(newObjList);
-                break;
-            }
-            default:
-                cout << "Invalid choice.";
-                break;
+            mapList[mapIndex - 1].printMatrix();
+        }
+        else if (opt == 3) {
+            removeObjectInMap(mapIndex);
+        }
+        else if (opt == 4) {
+            continues = false;
         }
 
-        // Display the updated attributes of the selected object
-        cout << "Updated attributes of the selected object:\n";
-        mapList[mapIndex - 1].printAnObject(objectIndex - 1);
-
-        mapList[mapIndex - 1].printMatrix();
-    }
+    } while (continues);
 }
 
 
@@ -826,7 +857,7 @@ int main() {
             }
 
         }
-        
+
         else if (choice == 3)
         {
             createMap();

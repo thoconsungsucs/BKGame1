@@ -112,7 +112,7 @@ public:
 
     void setName(string n) {name = n;};
 
-    void setObj(vector<Object> list) {
+    void setObjList(vector<Object> list) {
         objList = list;
     }
 
@@ -128,6 +128,7 @@ public:
             }
         }
     }
+
 
     void printMatrix() {
         cout << "Map " << name << endl;
@@ -196,6 +197,7 @@ public:
         cout << "  Scale: (" << objList[index].getScaleX() << ", " << objList[index].getScaleY() << ", " << objList[index].getScaleZ() << ")" << endl;
         cout << "  Rotation: (" << objList[index].getRotX() << ", " << objList[index].getRotY() << ", " << objList[index].getRotZ() << ")" << endl;
     }
+
     int totalobj(){
         return objList.size();
     }
@@ -220,7 +222,7 @@ bool readFile(const string &filename) {
     while (getline(input, line)) {
         if (line.empty()) { // Khi gặp một dòng trống(chuyển sang map khác)
             if (!curMap.getIndex().empty()) { // Kiểm tra xem có bản đồ hiện tại không
-                curMap.setObj(curObjList);
+                curMap.setObjList(curObjList);
                 curMap.setMatrix();
                 mapList.push_back(curMap); // Lưu bản đồ hiện tại vào danh sách
                 curMap = Map(""); // Reset bản đồ hiện tại
@@ -255,7 +257,7 @@ bool readFile(const string &filename) {
     }
 
     if (!curMap.getIndex().empty()) { // Lưu bản đồ cuối cùng nếu có
-        curMap.setObj(curObjList);
+        curMap.setObjList(curObjList);
         curMap.setMatrix();
         mapList.push_back(curMap);
 
@@ -470,7 +472,7 @@ void changemap() {
             newObjList[objectIndex - 1].setPosX(newX);
             newObjList[objectIndex - 1].setPosY(newY);
             newObjList[objectIndex - 1].setPosZ(newZ);
-            mapList[mapIndex - 1].setObj(newObjList);
+            mapList[mapIndex - 1].setObjList(newObjList);
             mapList[mapIndex - 1].setMatrix();
             break;
         }
@@ -488,7 +490,7 @@ void changemap() {
             newObjList[objectIndex - 1].setScaleX(newScaleX);
             newObjList[objectIndex - 1].setScaleY(newScaleY);
             newObjList[objectIndex - 1].setScaleZ(newScaleZ);
-            mapList[mapIndex - 1].setObj(newObjList);
+            mapList[mapIndex - 1].setObjList(newObjList);
             break;
         }
         case 4: // Change rotation
@@ -505,7 +507,7 @@ void changemap() {
             newObjList[objectIndex - 1].setRotX(newRotX);
             newObjList[objectIndex - 1].setRotY(newRotY);
             newObjList[objectIndex - 1].setRotZ(newRotZ);
-            mapList[mapIndex - 1].setObj(newObjList);
+            mapList[mapIndex - 1].setObjList(newObjList);
             break;
         }
         default:
@@ -536,7 +538,7 @@ int main() {
         cin.ignore();
         if (choice == 0)
         {
-
+            printMap();
         }
         else if (choice == 1)
         {

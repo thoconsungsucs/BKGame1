@@ -102,3 +102,19 @@ TREE1
 0,0,0
 model\TREE1.obj
 
+MAPhoang dzai 
+OBJ
+TREE0
+1,1,1
+1,1,1
+0,0,0
+model\TREE0.obj
+
+MAPthanh dzai
+OBJ
+HOUSE0
+4,5,6
+1,1,1
+0,0,0
+model\HOUSE0.obj
+

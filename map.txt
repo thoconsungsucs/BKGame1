@@ -1,16 +1,22 @@
 MAP1
 OBJ
-TREE0
-9,9,9
-1,1,1
-201,255,1
-model\TREE0.obj
-OBJ
 TREE1
 4,7,1
 1,1,1
 337,299,1
 model\TREE1.obj
+OBJ
+TREE2
+1,1,1
+1,1,1
+0,0,0
+model\TREE2.obj
+OBJ
+GOTO0
+9,9,9
+1,1,1
+0,0,0
+model\GOTO0.obj
 
 MAP2
 OBJ
@@ -81,6 +87,12 @@ GOTO17
 1,1,1
 1,146,1
 model\GOTO17.obj
+OBJ
+GOTO1
+9,9,9
+1,1,1
+0,0,0
+model\GOTO1.obj
 
 MAPfire
 OBJ
@@ -101,14 +113,32 @@ TREE1
 1,1,1
 0,0,0
 model\TREE1.obj
+OBJ
+GOTO0
+9,9,9
+1,1,1
+0,0,0
+model\GOTO0.obj
 
-MAPhoang dzai
+MAPhoang dzai 
 OBJ
 TREE0
 1,1,1
 1,1,1
 0,0,0
 model\TREE0.obj
+OBJ
+TREE1
+2,2,2
+1,1,1
+0,0,0
+model\TREE1.obj
+OBJ
+GOTO0
+9,9,9
+1,1,1
+0,0,0
+model\GOTO0.obj
 
 MAPthanh dzai
 OBJ
@@ -117,3 +147,10 @@ HOUSE0
 1,1,1
 0,0,0
 model\HOUSE0.obj
+OBJ
+GOTO0
+9,9,9
+1,1,1
+0,0,0
+model\GOTO0.obj
+

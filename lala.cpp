@@ -631,14 +631,15 @@ void checkValid() {
     }
 }
 // Function 2: Find patch
-bool isValidMove(int x, int y, const vector<vector<int>>& matrix, const vector<vector<bool>>& visited) {
-    return x >= 0 && x < matrix.size() && y >= 0 && y < matrix[0].size() && matrix[x][y] == 0 && !visited[x][y];
+bool isValidMove(int x, int y, const string (matrix)[10], const vector<vector<bool>>& visited) {
+    return x >= 0 && x < 10 && y >= 0 && y < 10 && matrix[x][y] == 00 && !visited[x][y];
 }
 
+
 // Tìm đường đi từ điểm xuất phát đến điểm đích
-vector<Position> findPath(const vector<vector<int>>& matrix) {
-    int rows = matrix.size();
-    int cols = matrix[0].size();
+vector<Position> findPath(const string (matrix)[10]) {
+    int rows = 10;
+    int cols = 10;
 
     // Điểm xuất phát và điểm đích là cố định
     Position start = {0, 0};
@@ -686,6 +687,8 @@ vector<Position> findPath(const vector<vector<int>>& matrix) {
 
     return path;
 }
+
+
 
 void printpathMatrix(const string (*matrix)[10], const vector<Position>& path) {
     for (int i = 0; i < 10; i++) {
@@ -744,56 +747,15 @@ int main() {
 
 
         else if (choice == 2) {
-//                 Hỏi người dùng muốn bắt đầu từ Map nào
-            string mapfirstIndex, maplastIndex;
-            cout << "Please enter your start map you want to find path: ";
-            cin >> mapfirstIndex;
-            cout << endl;
-            cout << "Please enter your last map you want to finish : ";
-            cin >> maplastIndex;
-            cout << endl;
-            int firstIndex, lastIndex;
-            for (int i = 0; i < mapList.size(); i++) {
-                if (mapfirstIndex == mapList[i].getIndex()) {
-                    firstIndex = i;
-                }
+            mapList[0].printMatrix();
+            vector<Position> path = findPath(*mapList[0].getMatrix());
 
-            }
-            for (int i = 0; i < mapList.size(); i++) {
-                if (maplastIndex == mapList[i].getIndex()) {
-                    lastIndex = i;
-                }
-
-            }
-
-
-            for (int t = firstIndex ; t < lastIndex+1; t++ ) {
-                // Khởi tạo vector
-
-                vector<vector<int>> inputMatrix3;
-
-                for (int i = 0; i < 10; i++) {
-                    vector<int> row;
-                    for (int j = 0; j < 10; j++) {
-                        if (mapList[t].getElementAt(i, j) == "0") {
-                            row.push_back(0);
-                        } else {
-                            row.push_back(1);
-                        }
-                    }
-                    inputMatrix3.push_back(row);
-                }
-
-                // In dữ liệu của inputMatrix3 để kiểm tra
-                // mapList[2].printMatrix();
-
-                vector<Position> path = findPath(inputMatrix3);
-
-
-                printpathMatrix(mapList[t].getMatrix(), path);
-
-            }
-
+            // In ra đường đi
+//            cout << "Path: ";
+//            for (const auto& pos : path) {
+//                cout << "(" << pos.x << ", " << pos.y << ") ";
+//            }
+            printpathMatrix(mapList[1].getMatrix(),path);
         }
         else if (choice == 3)
         {

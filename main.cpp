@@ -806,6 +806,7 @@ vector<Position> findPath(const vector<vector<int>>& matrix) {
 }
 
 void printpathMatrix(const string (*matrix)[10], const vector<Position>& path) {
+
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 10; j++) {
             bool isPath = false;
@@ -855,7 +856,7 @@ void countObject(const string (*matrix)[10], const vector<Position>& path, unord
                     } else if (symbol[0] == 'C') {
                         cSet.insert(symbol);
                     }else if (symbol[0] == 'T') {
-                        cSet.insert(symbol);
+                        tSet.insert(symbol);
                     }
                 }
             }
@@ -926,7 +927,7 @@ void function2(){
 
     for (int t = firstIndex ; t < lastIndex+1; t++ ) {
         // Khởi tạo vector
-
+        cout <<"MAP"<< mapList[t].getIndex()<<endl;
         vector<vector<int>> inputMatrix3;
         unordered_set<string> gSet, hSet, cSet, tSet;
         for (int i = 0; i < 10; i++) {

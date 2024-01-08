@@ -5,12 +5,16 @@
 #include <fstream>  // Bao gồm thư viện này
 #include <iomanip>
 #include <filesystem>
+#include <unordered_set>
+#include <algorithm>
 
-#include"struct.cpp"
 
 using namespace std;
 namespace fs = std::filesystem;
-
+struct Position {
+    int x;
+    int y;
+};
 class Object {
 private:
     string path, name;
@@ -715,7 +719,128 @@ void printpathMatrix(const string (*matrix)[10], const vector<Position>& path) {
     }
     cout << endl;
 }
+void countObject(const string (*matrix)[10], const vector<Position>& path, unordered_set<string>& hSet, unordered_set<string>& cSet, unordered_set<string>& tSet) {
+    for (const auto& pos : path) {
+        int x = pos.x;
+        int y = pos.y;
 
+        int radius = 1;
+        for (int i = -radius; i <= radius; ++i) {
+            for (int j = -radius; j <= radius; ++j) {
+                int newX = x + i;
+                int newY = y + j;
+
+                if (newX >= 0 && newX < 10 && newY >= 0 && newY < 10 && matrix[newX][newY] != "00") {
+                    string symbol = matrix[newX][newY];
+
+                    // Handle objects with brackets
+                    if (symbol[0] == '[') {
+                        symbol = symbol.substr(1, symbol.size() - 2);
+                    }if (symbol[0] == 'H') {
+                        hSet.insert(symbol);
+                    } else if (symbol[0] == 'C') {
+                        cSet.insert(symbol);
+                    }else if (symbol[0] == 'T') {
+                        cSet.insert(symbol);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void printSets( const unordered_set<string>& hSet, const unordered_set<string>& cSet, const unordered_set<string>& tSet ) {
+
+    if (!hSet.empty()) {
+        cout << "Objects in H set:" << endl;
+        for (const auto &symbol: hSet) {
+            cout << symbol << " ";
+        }
+    }
+    cout << endl;
+    if(!cSet.empty()) {
+        cout << "Objects in C set:" << endl;
+        for (const auto &symbol: cSet) {
+            cout << symbol << " ";
+        }
+    }
+    cout << endl;
+
+    if (!tSet.empty()) {
+        cout << "Objects in T set:" << endl;
+        for (const auto &symbol: tSet) {
+            cout << symbol << " ";
+        }
+    }
+    cout << endl;
+    size_t maxSize = max({ hSet.size(), cSet.size(),tSet.size()});
+    if (maxSize==0){
+        cout << "There is no object visible "<<endl;
+
+
+    } else if (maxSize == hSet.size() && maxSize != 0) {
+        cout << " H has the maximum spots: " <<maxSize<< endl;
+    } else if (maxSize == cSet.size() && maxSize != 0) {
+        cout << " C set has the maximum spots: " <<maxSize<< endl;
+    } else if (maxSize == tSet.size() && maxSize != 0) {
+        cout << " T set has the maximum spots: " <<maxSize<< endl;
+    }
+};
+void function2(){
+    //                 Hỏi người dùng muốn bắt đầu từ Map nào
+    string mapfirstIndex, maplastIndex;
+    cout << "Please enter your start map you want to find path: ";
+    cin >> mapfirstIndex;
+    cout << endl;
+    cout << "Please enter your last map you want to finish : ";
+    cin >> maplastIndex;
+    cout << endl;
+    int firstIndex, lastIndex;
+    for (int i = 0; i < mapList.size(); i++) {
+        if (mapfirstIndex == mapList[i].getIndex()) {
+            firstIndex = i;
+        }
+
+    }
+    for (int i = 0; i < mapList.size(); i++) {
+        if (maplastIndex == mapList[i].getIndex()) {
+            lastIndex = i;
+        }
+
+    }
+
+
+    for (int t = firstIndex ; t < lastIndex+1; t++ ) {
+        // Khởi tạo vector
+
+        vector<vector<int>> inputMatrix3;
+        unordered_set<string> gSet, hSet, cSet, tSet;
+        for (int i = 0; i < 10; i++) {
+            vector<int> row;
+            for (int j = 0; j < 10; j++) {
+                if (mapList[t].getElementAt(i, j) == "0") {
+                    row.push_back(0);
+                } else {
+                    row.push_back(1);
+                }
+            }
+            inputMatrix3.push_back(row);
+        }
+
+        // In dữ liệu của inputMatrix3 để kiểm tra
+        // mapList[2].printMatrix();
+
+        vector<Position> path = findPath(inputMatrix3);
+        countObject(mapList[t].getMatrix(), path, hSet, cSet,tSet);
+        // Print the results
+
+        cout << endl;
+        printpathMatrix(mapList[t].getMatrix(), path);
+        printSets( hSet, cSet, tSet);
+
+    }
+
+};
 int main() {
     readFile("map.txt");
     int choice;
@@ -744,56 +869,59 @@ int main() {
 
 
         else if (choice == 2) {
-//                 Hỏi người dùng muốn bắt đầu từ Map nào
-            string mapfirstIndex, maplastIndex;
-            cout << "Please enter your start map you want to find path: ";
-            cin >> mapfirstIndex;
-            cout << endl;
-            cout << "Please enter your last map you want to finish : ";
-            cin >> maplastIndex;
-            cout << endl;
-            int firstIndex, lastIndex;
-            for (int i = 0; i < mapList.size(); i++) {
-                if (mapfirstIndex == mapList[i].getIndex()) {
-                    firstIndex = i;
-                }
-
-            }
-            for (int i = 0; i < mapList.size(); i++) {
-                if (maplastIndex == mapList[i].getIndex()) {
-                    lastIndex = i;
-                }
-
-            }
-
-
-            for (int t = firstIndex ; t < lastIndex+1; t++ ) {
-                // Khởi tạo vector
-
-                vector<vector<int>> inputMatrix3;
-
-                for (int i = 0; i < 10; i++) {
-                    vector<int> row;
-                    for (int j = 0; j < 10; j++) {
-                        if (mapList[t].getElementAt(i, j) == "0") {
-                            row.push_back(0);
-                        } else {
-                            row.push_back(1);
-                        }
-                    }
-                    inputMatrix3.push_back(row);
-                }
-
-                // In dữ liệu của inputMatrix3 để kiểm tra
-                // mapList[2].printMatrix();
-
-                vector<Position> path = findPath(inputMatrix3);
-
-
-                printpathMatrix(mapList[t].getMatrix(), path);
-
-            }
-
+////                 Hỏi người dùng muốn bắt đầu từ Map nào
+//            string mapfirstIndex, maplastIndex;
+//            cout << "Please enter your start map you want to find path: ";
+//            cin >> mapfirstIndex;
+//            cout << endl;
+//            cout << "Please enter your last map you want to finish : ";
+//            cin >> maplastIndex;
+//            cout << endl;
+//            int firstIndex, lastIndex;
+//            for (int i = 0; i < mapList.size(); i++) {
+//                if (mapfirstIndex == mapList[i].getIndex()) {
+//                    firstIndex = i;
+//                }
+//
+//            }
+//            for (int i = 0; i < mapList.size(); i++) {
+//                if (maplastIndex == mapList[i].getIndex()) {
+//                    lastIndex = i;
+//                }
+//
+//            }
+//
+//
+//            for (int t = firstIndex ; t < lastIndex+1; t++ ) {
+//                // Khởi tạo vector
+//
+//                vector<vector<int>> inputMatrix3;
+//                unordered_set<string> gSet, hSet, cSet, tSet;
+//                for (int i = 0; i < 10; i++) {
+//                    vector<int> row;
+//                    for (int j = 0; j < 10; j++) {
+//                        if (mapList[t].getElementAt(i, j) == "0") {
+//                            row.push_back(0);
+//                        } else {
+//                            row.push_back(1);
+//                        }
+//                    }
+//                    inputMatrix3.push_back(row);
+//                }
+//
+//                // In dữ liệu của inputMatrix3 để kiểm tra
+//                // mapList[2].printMatrix();
+//
+//                vector<Position> path = findPath(inputMatrix3);
+//                countObject(mapList[t].getMatrix(), path, gSet, hSet, cSet,tSet);
+//                // Print the results
+//
+//                cout << endl;
+//                printpathMatrix(mapList[t].getMatrix(), path);
+//                printSets(gSet, hSet, cSet, tSet);
+//
+//            }
+            function2();
         }
         else if (choice == 3)
         {

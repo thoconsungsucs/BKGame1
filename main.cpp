@@ -591,6 +591,17 @@ void function2(){
 
 
 //Function 3: Tạo Map
+void saveNewObject(Object newObject) {
+    string folderPath = "model/";
+    string fileName = newObject.getName();
+    string fullPath = folderPath + fileName + ".obj";
+    ofstream file(fullPath);
+    if(file.is_open()) {
+        file << newObject.getName()<< "\n";
+        file << 100;
+    }
+}
+
 void createMap() {
     string name_map;
     cout << "Enter a name for a new map:";
@@ -604,12 +615,6 @@ void createMap() {
         cout << "Put object into the new map.(Y or N)";
         cin >> continues;
         continues = toupper(continues);
-        Object newgoto;
-        newgoto.setName("GOTO0");
-        newgoto.setPosX("9");
-        newgoto.setPosY("9");
-        newgoto.setPosZ("9");
-        mymap.addObject(newgoto);
         
         if (continues == 'Y') {
             int option;
@@ -626,26 +631,35 @@ void createMap() {
 
             if (poX >= 0 && poX < 10 && poY >= 0 && poY < 10) {
                 Object myObject;
+                myObject.setName(to_string(rand() % 100));
                 if (option == 1) {
                     int tree_total = mymap.objtotal(option);
-                    myObject.setName("TREE" + to_string(tree_total));
+                    myObject.setName("TREE" + to_string(rand() % 100));
                 } else if (option == 2) {
                     int house_total = mymap.objtotal(option);
-                    myObject.setName("HOUSE" + to_string(house_total));
+                    myObject.setName("HOUSE" + to_string(rand() % 100));
                 } else if (option == 3) {
                     int car_total = mymap.objtotal(option);
-                    myObject.setName("CAR" + to_string(car_total));
+                    myObject.setName("CAR" + to_string(rand() % 100));
                 }
 
                 myObject.setPosX(to_string(poX));
                 myObject.setPosY(to_string(poY));
                 myObject.setPosZ(to_string(poZ));
                 mymap.addObject(myObject);
+                saveNewObject(myObject);
             } else {
                 cout << "Invalid coordinates. Coordinates must be between 0 and 9." << endl;
             }
         }
     } while (continues == 'Y');
+    Object newgoto;
+    newgoto.setName("GOTO" + to_string(rand() % 100));
+    newgoto.setPosX("9");
+    newgoto.setPosY("9");
+    newgoto.setPosZ("9");
+    saveNewObject(newgoto);
+    mymap.addObject(newgoto);
     mapList.push_back(mymap);
     printMap();
 }
@@ -706,13 +720,13 @@ void addObjectInMap(int mapIndex) {
     if (stoi(posX) >= 0 && stoi(posX) < 10 && stoi(posY) >= 0 && stoi(posY) < 10) {
         if (option == 1) {
             int tree_total = mapList[mapIndex].objtotal(option);
-            myObject.setName("TREE" + to_string(tree_total));
+            myObject.setName("TREE" + to_string(rand() % 100));
         } else if (option == 2) {
             int house_total = mapList[mapIndex].objtotal(option);
-            myObject.setName("HOUSE" + to_string(house_total));
+            myObject.setName("HOUSE" + to_string(rand() % 100));
         } else if (option == 3) {
             int car_total = mapList[mapIndex].objtotal(option);
-            myObject.setName("CAR" + to_string(car_total));
+            myObject.setName("CAR" + to_string(rand() % 100));
         }
         myObject.setPosX(posX);
         myObject.setPosY(posY);
@@ -722,6 +736,7 @@ void addObjectInMap(int mapIndex) {
         mapList[mapIndex].addObject(myObject);
         mapList[mapIndex].setMatrix();
         mapList[mapIndex].printAllObjects();
+        saveNewObject(myObject);
         cout << "Object added successfully to the map: " << mapList[mapIndex].getIndex() << endl;
     }
 }
@@ -746,9 +761,19 @@ void removeObjectInMap(int mapIndex) {
     mapList[mapIndex].printAllObjects();
 }
 
+
 // Xóa 1 map
 void removeMap(int mapIndex){
     mapIndex--;
+    string folderPath = "model/";
+    vector<Object> objList;
+    objList = mapList[mapIndex].getList();
+    for (int i = 0; i < objList.size(); i++)
+    {
+        string fileName = objList[i].getName();
+        string fullPath = folderPath + fileName + ".obj";
+        remove(fullPath.c_str());
+    }
     mapList.erase(mapList.begin() + mapIndex);
     cout << "Succesfully remove map.\n";
     printMapName();

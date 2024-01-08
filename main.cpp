@@ -309,6 +309,14 @@ void printMap()
     }
 }
 
+// In tất cả tên map
+void printMapName(){
+    cout << "Available maps:\n";
+    for (int i = 0; i < mapList.size(); i++) {
+        cout << i + 1 << ". " << mapList[i].getIndex() << endl;
+    }
+}
+
 //Function 1:
 // Sử dụng 'w', 'a', 's', 'd' để di chuyển
 // Nhấn 'e' để thoát
@@ -682,14 +690,6 @@ bool isPositionValid(int x, int y, int z, vector<Object> objList) {
         }
     }
     return true;
-}
-
-// In tất cả tên map
-void printMapName(){
-    cout << "Available maps:\n";
-    for (int i = 0; i < mapList.size(); i++) {
-        cout << i + 1 << ". " << mapList[i].getIndex() << endl;
-    }
 }
 
 // Thêm 1 object

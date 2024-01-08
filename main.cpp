@@ -366,60 +366,6 @@ void play() {
 
 
 // Function 2: Find patch
-bool isValidMove(int x, int y, const vector<vector<int>>& matrix, const vector<vector<bool>>& visited) {
-    return x >= 0 && x < matrix.size() && y >= 0 && y < matrix[0].size() && matrix[x][y] == 0 && !visited[x][y];
-}
-
-vector<Position> findPath(const vector<vector<int>>& matrix) {
-    int rows = matrix.size();
-    int cols = matrix[0].size();
-
-    // Điểm xuất phát và điểm đích là cố định
-    Position start = {0, 0};
-    Position end = {9, 9};
-
-    // Khởi tạo ma trận visited để theo dõi các ô đã được đi qua
-    vector<vector<bool>> visited(rows, vector<bool>(cols, false));
-
-    // Hướng di chuyển ban đầu
-    vector<Position> directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-
-    // Lưu trữ kết quả
-    vector<Position> path;
-    path.push_back(start);
-
-    // Quy hoạch động để tìm đường đi
-    Position current = start;
-    while (current.x != end.x || current.y != end.y) {
-        bool foundMove = false;
-
-        for (const auto& direction : directions) {
-            int new_x = current.x + direction.x;
-            int new_y = current.y + direction.y;
-
-            if (isValidMove(new_x, new_y, matrix, visited)) {
-                visited[new_x][new_y] = true;
-                path.push_back({new_x, new_y});
-                current = {new_x, new_y};
-                foundMove = true;
-                break;
-            }
-        }
-
-        if (!foundMove) {
-            // Nếu không tìm thấy bước di chuyển hợp lệ, quay lui
-            path.pop_back();
-            if (!path.empty()) {
-                current = path.back();
-            } else {
-                // Không còn đường để quay lui
-                break;
-            }
-        }
-    }
-
-    return path;
-}
 
 
 //Function 3:
@@ -684,6 +630,91 @@ void checkValid() {
         }
     }
 }
+// Function 2: Find patch
+bool isValidMove(int x, int y, const vector<vector<int>>& matrix, const vector<vector<bool>>& visited) {
+    return x >= 0 && x < matrix.size() && y >= 0 && y < matrix[0].size() && matrix[x][y] == 0 && !visited[x][y];
+}
+
+// Tìm đường đi từ điểm xuất phát đến điểm đích
+vector<Position> findPath(const vector<vector<int>>& matrix) {
+    int rows = matrix.size();
+    int cols = matrix[0].size();
+
+    // Điểm xuất phát và điểm đích là cố định
+    Position start = {0, 0};
+    Position end = {9, 9};
+
+    // Khởi tạo ma trận visited để theo dõi các ô đã được đi qua
+    vector<vector<bool>> visited(rows, vector<bool>(cols, false));
+
+    // Hướng di chuyển ban đầu
+    vector<Position> directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+
+    // Lưu trữ kết quả
+    vector<Position> path;
+    path.push_back(start);
+
+    // Quy hoạch động để tìm đường đi
+    Position current = start;
+    while (current.x != end.x || current.y != end.y) {
+        bool foundMove = false;
+
+        for (const auto& direction : directions) {
+            int new_x = current.x + direction.x;
+            int new_y = current.y + direction.y;
+
+            if (isValidMove(new_x, new_y, matrix, visited)) {
+                visited[new_x][new_y] = true;
+                path.push_back({new_x, new_y});
+                current = {new_x, new_y};
+                foundMove = true;
+                break;
+            }
+        }
+
+        if (!foundMove) {
+            // Nếu không tìm thấy bước di chuyển hợp lệ, quay lui
+            path.pop_back();
+            if (!path.empty()) {
+                current = path.back();
+            } else {
+                // Không còn đường để quay lui
+                break;
+            }
+        }
+    }
+
+    return path;
+}
+
+void printpathMatrix(const string (*matrix)[10], const vector<Position>& path) {
+    for (int i = 0; i < 10; i++) {
+        for (int j = 0; j < 10; j++) {
+            bool isPath = false;
+            for (const auto& pos : path) {
+                if (pos.x == i && pos.y == j) {
+                    isPath = true;
+                    break;
+                }
+            }
+
+            if (isPath) {
+                // Nếu là đường đi, in "**"
+                cout << setw(7) << "**";
+            } else {
+                if (matrix[i][j] == "0") {
+                    // Nếu là giá trị "0", in "00"
+                    cout << setw(6) << matrix[i][j][0] << matrix[i][j][matrix[i][j].size() - 1];
+                } else {
+                    // Nếu là giá trị khác "0", in giá trị với dấu ngoặc vuông và đảm bảo căn chỉnh với độ rộng 5
+                    cout << setw(4) << "[" << matrix[i][j][0] << matrix[i][j][matrix[i][j].size() - 1] << "]";
+                }
+            }
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
 
 int main() {
     readFile("map.txt");
@@ -710,52 +741,61 @@ int main() {
             play();
         }
 
-        else if (choice == 2)
-        {
-            mapList[0].getElementAt(0,0);
 
-        } else if (choice == 1) {
-            play();
 
-        } else if (choice == 2) {
-            mapList[0].getElementAt(0, 0);
+        else if (choice == 2) {
+//                 Hỏi người dùng muốn bắt đầu từ Map nào
+            string mapfirstIndex, maplastIndex;
+            cout << "Please enter your start map you want to find path: ";
+            cin >> mapfirstIndex;
+            cout << endl;
+            cout << "Please enter your last map you want to finish : ";
+            cin >> maplastIndex;
+            cout << endl;
+            int firstIndex, lastIndex;
+            for (int i = 0; i < mapList.size(); i++) {
+                if (mapfirstIndex == mapList[i].getIndex()) {
+                    firstIndex = i;
+                }
 
-            // Khởi tạo vector
-            vector<vector<int>> inputMatrix3;
-            // Hỏi người dùng muốn bắt đầu từ Map nào
-            // int mapfirstIndex;
-            // cout <<"Please enter your start map you want to find path: ";
-            // cin >> mapfirstIndex;
-            // // cout <<"Please enter your last map you want to finish : ";
-            // cout <<endl;
-            for (int i = 0; i < 10; i++) {
-                vector<int> row;
-                for (int j = 0; j < 10; j++) {
-                    if (mapList[0].getElementAt(i, j) == "0") {
-                        row.push_back(0);
-                    } else {
-                        row.push_back(1);
+            }
+            for (int i = 0; i < mapList.size(); i++) {
+                if (maplastIndex == mapList[i].getIndex()) {
+                    lastIndex = i;
+                }
+
+            }
+
+
+            for (int t = firstIndex ; t < lastIndex+1; t++ ) {
+                // Khởi tạo vector
+
+                vector<vector<int>> inputMatrix3;
+
+                for (int i = 0; i < 10; i++) {
+                    vector<int> row;
+                    for (int j = 0; j < 10; j++) {
+                        if (mapList[t].getElementAt(i, j) == "0") {
+                            row.push_back(0);
+                        } else {
+                            row.push_back(1);
+                        }
                     }
+                    inputMatrix3.push_back(row);
                 }
-                inputMatrix3.push_back(row);
-            }
-            // In dữ liệu của inputMatrix3 để kiểm tra
-            for (const auto &row: inputMatrix3) {
-                for (int value: row) {
-                    cout << value << " ";
-                }
-                cout << endl;
-            }
-            vector<Position> path = findPath(inputMatrix3);
 
-            // In đường đi
-            for (int i = 0; i < path.size(); i++) {
-                cout << "(" << path[i].x << ", " << path[i].y << ") ";
+                // In dữ liệu của inputMatrix3 để kiểm tra
+                // mapList[2].printMatrix();
+
+                vector<Position> path = findPath(inputMatrix3);
+
+
+                printpathMatrix(mapList[t].getMatrix(), path);
+
             }
 
         }
-
-        else if (choice == 3)
+            else if (choice == 3)
         {
             createmap();
         }

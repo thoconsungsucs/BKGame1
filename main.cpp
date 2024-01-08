@@ -748,7 +748,7 @@ vector<Position> findPath(const vector<vector<int>>& matrix) {
 
     // Điểm xuất phát và điểm đích là cố định
     Position start = {0, 0};
-    Position end = {9, 9};
+    Position end = {8, 9};
 
     // Khởi tạo ma trận visited để theo dõi các ô đã được đi qua
     vector<vector<bool>> visited(rows, vector<bool>(cols, false));

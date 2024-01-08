@@ -55,6 +55,12 @@ GOTO18
 1,1,1
 125,261,1
 model\GOTO18.obj
+OBJ
+HOUSE2
+6,9,1
+1,1,1
+0,0,0
+model\HOUSE2.obj
 
 MAP3
 OBJ
@@ -120,7 +126,7 @@ GOTO0
 0,0,0
 model\GOTO0.obj
 
-MAPhoang dzai 
+MAPhoangdzai
 OBJ
 TREE0
 1,1,1
@@ -140,7 +146,7 @@ GOTO0
 0,0,0
 model\GOTO0.obj
 
-MAPthanh dzai
+MAPthanhdzai
 OBJ
 HOUSE0
 4,5,6
@@ -154,7 +160,7 @@ GOTO0
 0,0,0
 model\GOTO0.obj
 
-MAPduc dzai
+MAPducdzai
 OBJ
 TREE0
 4,5,6

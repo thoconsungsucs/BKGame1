@@ -869,58 +869,7 @@ int main() {
 
 
         else if (choice == 2) {
-////                 Hỏi người dùng muốn bắt đầu từ Map nào
-//            string mapfirstIndex, maplastIndex;
-//            cout << "Please enter your start map you want to find path: ";
-//            cin >> mapfirstIndex;
-//            cout << endl;
-//            cout << "Please enter your last map you want to finish : ";
-//            cin >> maplastIndex;
-//            cout << endl;
-//            int firstIndex, lastIndex;
-//            for (int i = 0; i < mapList.size(); i++) {
-//                if (mapfirstIndex == mapList[i].getIndex()) {
-//                    firstIndex = i;
-//                }
-//
-//            }
-//            for (int i = 0; i < mapList.size(); i++) {
-//                if (maplastIndex == mapList[i].getIndex()) {
-//                    lastIndex = i;
-//                }
-//
-//            }
-//
-//
-//            for (int t = firstIndex ; t < lastIndex+1; t++ ) {
-//                // Khởi tạo vector
-//
-//                vector<vector<int>> inputMatrix3;
-//                unordered_set<string> gSet, hSet, cSet, tSet;
-//                for (int i = 0; i < 10; i++) {
-//                    vector<int> row;
-//                    for (int j = 0; j < 10; j++) {
-//                        if (mapList[t].getElementAt(i, j) == "0") {
-//                            row.push_back(0);
-//                        } else {
-//                            row.push_back(1);
-//                        }
-//                    }
-//                    inputMatrix3.push_back(row);
-//                }
-//
-//                // In dữ liệu của inputMatrix3 để kiểm tra
-//                // mapList[2].printMatrix();
-//
-//                vector<Position> path = findPath(inputMatrix3);
-//                countObject(mapList[t].getMatrix(), path, gSet, hSet, cSet,tSet);
-//                // Print the results
-//
-//                cout << endl;
-//                printpathMatrix(mapList[t].getMatrix(), path);
-//                printSets(gSet, hSet, cSet, tSet);
-//
-//            }
+
             function2();
         }
         else if (choice == 3)

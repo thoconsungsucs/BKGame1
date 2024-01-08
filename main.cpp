@@ -544,6 +544,7 @@ void printSets( const unordered_set<string>& hSet, const unordered_set<string>& 
 void function2(){
     //                 Hỏi người dùng muốn bắt đầu từ Map nào
     string mapfirstIndex, maplastIndex;
+    printMapName();
     cout << "Please enter your start map you want to find path: ";
     cin >> mapfirstIndex;
     cout << endl;

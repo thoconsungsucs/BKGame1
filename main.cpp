@@ -15,6 +15,8 @@ struct Position {
     int x;
     int y;
 };
+
+
 class Object {
 private:
     string path, name;
@@ -179,14 +181,7 @@ public:
                 if (objList[i].getName().substr(0, 4) == "CAR")
                     count++;
             }
-        }   else if (opt == 4) {
-            for (int i = 0; i < objList.size(); i++) {
-                if (objList[i].getName().substr(0, 4) == "GOTO")
-                    count++;
-            }
         }
-
-
         return count;
     }
 
@@ -388,8 +383,8 @@ void play() {
 // Function 2: Find patch
 
 
-//Function 3:
-void createmap() {
+//Function 3: Tạo Map
+void createMap() {
     string name_map;
     cout << "Enter a name for a new map:";
     getline(cin, name_map);
@@ -402,6 +397,13 @@ void createmap() {
         cout << "Put object into the new map.(Y or N)";
         cin >> continues;
         continues = toupper(continues);
+        Object newgoto;
+        newgoto.setName("GOTO0");
+        newgoto.setPosX("9");
+        newgoto.setPosY("9");
+        newgoto.setPosZ("9");
+        mymap.addObject(newgoto);
+        
         if (continues == 'Y') {
             int option;
             cout << "1.Tree\n" << "2.House\n" << "3.Car\n";
@@ -416,22 +418,22 @@ void createmap() {
             cin >> poZ;
 
             if (poX >= 0 && poX < 10 && poY >= 0 && poY < 10) {
-                Object myobject;
+                Object myObject;
                 if (option == 1) {
                     int tree_total = mymap.objtotal(option);
-                    myobject.setName("TREE" + to_string(tree_total));
+                    myObject.setName("TREE" + to_string(tree_total));
                 } else if (option == 2) {
                     int house_total = mymap.objtotal(option);
-                    myobject.setName("HOUSE" + to_string(house_total));
+                    myObject.setName("HOUSE" + to_string(house_total));
                 } else if (option == 3) {
                     int car_total = mymap.objtotal(option);
-                    myobject.setName("CAR" + to_string(car_total));
+                    myObject.setName("CAR" + to_string(car_total));
                 }
 
-                myobject.setPosX(to_string(poX));
-                myobject.setPosY(to_string(poY));
-                myobject.setPosZ(to_string(poZ));
-                mymap.addObject(myobject);
+                myObject.setPosX(to_string(poX));
+                myObject.setPosY(to_string(poY));
+                myObject.setPosZ(to_string(poZ));
+                mymap.addObject(myObject);
             } else {
                 cout << "Invalid coordinates. Coordinates must be between 0 and 9." << endl;
             }
@@ -442,8 +444,14 @@ void createmap() {
 }
 
 
-//Function 4:
+/*Function 4:
+1.Add object
+2.Change object information
+3.Remove object
+4.Remove map
+*/
 
+//Kiểm tra trùng lặp vị trí object
 bool isPositionValid(int x, int y, int z, vector<Object> objList) {
     if (x < 0 || x >= 10 || y < 0 || y >= 10 || z < 0 || z >= 10) return false;
 
@@ -455,6 +463,7 @@ bool isPositionValid(int x, int y, int z, vector<Object> objList) {
     return true;
 }
 
+// In tất cả tên map
 void printMapName(){
     cout << "Available maps:\n";
     for (int i = 0; i < mapList.size(); i++) {
@@ -462,6 +471,7 @@ void printMapName(){
     }
 }
 
+// Thêm 1 object
 void addObjectInMap(int mapIndex) {
     mapIndex--; // Chỉ số mảng bắt đầu từ 0
     // Nhập thông tin đối tượng
@@ -496,9 +506,6 @@ void addObjectInMap(int mapIndex) {
         } else if (option == 3) {
             int car_total = mapList[mapIndex].objtotal(option);
             myObject.setName("CAR" + to_string(car_total));
-        } else if (option == 4) {
-            int car_total = mapList[mapIndex].objtotal(option);
-            myObject.setName("GOTO" + to_string(car_total));
         }
         myObject.setPosX(posX);
         myObject.setPosY(posY);
@@ -512,6 +519,7 @@ void addObjectInMap(int mapIndex) {
     }
 }
 
+// Xóa 1 object
 void removeObjectInMap(int mapIndex) {
     int objectIndex = 0;
     mapIndex--;
@@ -531,6 +539,15 @@ void removeObjectInMap(int mapIndex) {
     mapList[mapIndex].printAllObjects();
 }
 
+// Xóa 1 map
+void removeMap(int mapIndex){
+    mapIndex--;
+    mapList.erase(mapList.begin() + mapIndex);
+    cout << "Succesfully remove map.\n";
+    printMapName();
+}
+
+
 void changeMap() {
     int mapIndex, objectIndex, option,opt;
     bool continues = true;
@@ -545,10 +562,12 @@ void changeMap() {
     } while (mapIndex < 1 || mapIndex > mapList.size());
 
     do {
+        cout << "\nCHANGEMAP\n";
         cout << "1.Add Object in map.\n";
         cout << "2.Change Object in map.\n";
         cout << "3.Remove Object in map.\n";
-        cout << "4.Exit.\n";
+        cout << "4.Remove map.\n";
+        cout << "5.Exit.\n";
         cout << "Enter option: ";
         cin >> opt;
         if (opt == 1){
@@ -668,6 +687,9 @@ void changeMap() {
             removeObjectInMap(mapIndex);
         }
         else if (opt == 4) {
+            removeMap(mapIndex);
+        }
+        else if (opt == 5) {
             continues = false;
         }
 
@@ -675,9 +697,7 @@ void changeMap() {
 }
 
 
-
-
-//Save infor
+//Lưu thông tin thay đổi vào file
 void saveToFile(const string& filename, vector<Map>& mapList) {
     ofstream file;
     file.open("map.txt");
@@ -705,6 +725,7 @@ void saveToFile(const string& filename, vector<Map>& mapList) {
     cout << "Maps and objects saved to " << filename << endl;
 }
 
+//Function 6:Kiểm tra hợp lệ
 void checkValid() {
     for (int i = 0; i < mapList.size(); i++) {
         vector<Object> curList = mapList[i].getList();
@@ -748,6 +769,7 @@ void checkValid() {
         }
     }
 }
+
 // Function 2: Find patch
 bool isValidMove(int x, int y, const vector<vector<int>>& matrix, const vector<vector<bool>>& visited) {
     return x >= 0 && x < matrix.size() && y >= 0 && y < matrix[0].size() && matrix[x][y] == 0 && !visited[x][y];
@@ -833,6 +855,7 @@ void printpathMatrix(const string (*matrix)[10], const vector<Position>& path) {
     }
     cout << endl;
 }
+
 void countObject(const string (*matrix)[10], const vector<Position>& path, unordered_set<string>& hSet, unordered_set<string>& cSet, unordered_set<string>& tSet) {
     for (const auto& pos : path) {
         int x = pos.x;
@@ -988,7 +1011,7 @@ int main() {
         }
         else if (choice == 3)
         {
-            createmap();
+            createMap();
         }
 
         else if (choice == 4)

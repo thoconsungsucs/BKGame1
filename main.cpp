@@ -386,6 +386,213 @@ void play() {
 
 
 // Function 2: Find patch
+bool isValidMove(int x, int y, const vector<vector<int>>& matrix, const vector<vector<bool>>& visited) {
+    return x >= 0 && x < matrix.size() && y >= 0 && y < matrix[0].size() && matrix[x][y] == 0 && !visited[x][y];
+}
+
+// Tìm đường đi từ điểm xuất phát đến điểm đích
+vector<Position> findPath(const vector<vector<int>>& matrix) {
+    int rows = matrix.size();
+    int cols = matrix[0].size();
+
+    // Điểm xuất phát và điểm đích là cố định
+    Position start = {0, 0};
+    Position end = {8, 9};
+
+    // Khởi tạo ma trận visited để theo dõi các ô đã được đi qua
+    vector<vector<bool>> visited(rows, vector<bool>(cols, false));
+
+    // Hướng di chuyển ban đầu
+    vector<Position> directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+
+    // Lưu trữ kết quả
+    vector<Position> path;
+    path.push_back(start);
+
+    // Quy hoạch động để tìm đường đi
+    Position current = start;
+    while (current.x != end.x || current.y != end.y) {
+        bool foundMove = false;
+
+        for (const auto& direction : directions) {
+            int new_x = current.x + direction.x;
+            int new_y = current.y + direction.y;
+
+            if (isValidMove(new_x, new_y, matrix, visited)) {
+                visited[new_x][new_y] = true;
+                path.push_back({new_x, new_y});
+                current = {new_x, new_y};
+                foundMove = true;
+                break;
+            }
+        }
+
+        if (!foundMove) {
+            // Nếu không tìm thấy bước di chuyển hợp lệ, quay lui
+            path.pop_back();
+            if (!path.empty()) {
+                current = path.back();
+            } else {
+                // Không còn đường để quay lui
+                break;
+            }
+        }
+    }
+
+    return path;
+}
+
+void printpathMatrix(const string (*matrix)[10], const vector<Position>& path) {
+
+    for (int i = 0; i < 10; i++) {
+        for (int j = 0; j < 10; j++) {
+            bool isPath = false;
+            for (const auto& pos : path) {
+                if (pos.x == i && pos.y == j) {
+                    isPath = true;
+                    break;
+                }
+            }
+
+            if (isPath) {
+                // Nếu là đường đi, in "**"
+                cout << setw(7) << "**";
+            } else {
+                if (matrix[i][j] == "0") {
+                    // Nếu là giá trị "0", in "00"
+                    cout << setw(6) << matrix[i][j][0] << matrix[i][j][matrix[i][j].size() - 1];
+                } else {
+                    // Nếu là giá trị khác "0", in giá trị với dấu ngoặc vuông và đảm bảo căn chỉnh với độ rộng 5
+                    cout << setw(4) << "[" << matrix[i][j][0] << matrix[i][j][matrix[i][j].size() - 1] << "]";
+                }
+            }
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+void countObject(const string (*matrix)[10], const vector<Position>& path, unordered_set<string>& hSet, unordered_set<string>& cSet, unordered_set<string>& tSet) {
+    for (const auto& pos : path) {
+        int x = pos.x;
+        int y = pos.y;
+
+        int radius = 1;
+        for (int i = -radius; i <= radius; ++i) {
+            for (int j = -radius; j <= radius; ++j) {
+                int newX = x + i;
+                int newY = y + j;
+
+                if (newX >= 0 && newX < 10 && newY >= 0 && newY < 10 && matrix[newX][newY] != "00") {
+                    string symbol = matrix[newX][newY];
+
+                    // Handle objects with brackets
+                    if (symbol[0] == '[') {
+                        symbol = symbol.substr(1, symbol.size() - 2);
+                    }if (symbol[0] == 'H') {
+                        hSet.insert(symbol);
+                    } else if (symbol[0] == 'C') {
+                        cSet.insert(symbol);
+                    }else if (symbol[0] == 'T') {
+                        tSet.insert(symbol);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void printSets( const unordered_set<string>& hSet, const unordered_set<string>& cSet, const unordered_set<string>& tSet ) {
+
+    if (!hSet.empty()) {
+        cout << "Objects in H set:" << endl;
+        for (const auto &symbol: hSet) {
+            cout << symbol << " ";
+        }
+    }
+    cout << endl;
+    if(!cSet.empty()) {
+        cout << "Objects in C set:" << endl;
+        for (const auto &symbol: cSet) {
+            cout << symbol << " ";
+        }
+    }
+    cout << endl;
+
+    if (!tSet.empty()) {
+        cout << "Objects in T set:" << endl;
+        for (const auto &symbol: tSet) {
+            cout << symbol << " ";
+        }
+    }
+    cout << endl;
+    size_t maxSize = max({ hSet.size(), cSet.size(),tSet.size()});
+    if (maxSize==0){
+        cout << "There is no object visible "<<endl;
+
+
+    } else if (maxSize == hSet.size() && maxSize != 0) {
+        cout << " H has the maximum spots: " <<maxSize<< endl;
+    } else if (maxSize == cSet.size() && maxSize != 0) {
+        cout << " C set has the maximum spots: " <<maxSize<< endl;
+    } else if (maxSize == tSet.size() && maxSize != 0) {
+        cout << " T set has the maximum spots: " <<maxSize<< endl;
+    }
+};
+void function2(){
+    //                 Hỏi người dùng muốn bắt đầu từ Map nào
+    string mapfirstIndex, maplastIndex;
+    cout << "Please enter your start map you want to find path: ";
+    cin >> mapfirstIndex;
+    cout << endl;
+    cout << "Please enter your last map you want to finish : ";
+    cin >> maplastIndex;
+    cout << endl;
+    int firstIndex, lastIndex;
+    for (int i = 0; i < mapList.size(); i++) {
+        if (mapfirstIndex == mapList[i].getIndex()) {
+            firstIndex = i;
+        }
+
+    }
+    for (int i = 0; i < mapList.size(); i++) {
+        if (maplastIndex == mapList[i].getIndex()) {
+            lastIndex = i;
+        }
+
+    }
+
+
+    for (int t = firstIndex ; t < lastIndex+1; t++ ) {
+        // Khởi tạo vector
+        cout <<"MAP"<< mapList[t].getIndex()<<endl;
+        vector<vector<int>> inputMatrix3;
+        unordered_set<string> gSet, hSet, cSet, tSet;
+        for (int i = 0; i < 10; i++) {
+            vector<int> row;
+            for (int j = 0; j < 10; j++) {
+                if (mapList[t].getElementAt(i, j) == "0") {
+                    row.push_back(0);
+                } else {
+                    row.push_back(1);
+                }
+            }
+            inputMatrix3.push_back(row);
+        }
+
+        // In dữ liệu của inputMatrix3 để kiểm tra
+        // mapList[2].printMatrix();
+
+        vector<Position> path = findPath(inputMatrix3);
+        countObject(mapList[t].getMatrix(), path, hSet, cSet,tSet);
+        // Print the results
+
+        cout << endl;
+        printpathMatrix(mapList[t].getMatrix(), path);
+        printSets( hSet, cSet, tSet);
+
+    }
+
+};
 
 
 //Function 3:
@@ -748,214 +955,7 @@ void checkValid() {
         }
     }
 }
-// Function 2: Find patch
-bool isValidMove(int x, int y, const vector<vector<int>>& matrix, const vector<vector<bool>>& visited) {
-    return x >= 0 && x < matrix.size() && y >= 0 && y < matrix[0].size() && matrix[x][y] == 0 && !visited[x][y];
-}
 
-// Tìm đường đi từ điểm xuất phát đến điểm đích
-vector<Position> findPath(const vector<vector<int>>& matrix) {
-    int rows = matrix.size();
-    int cols = matrix[0].size();
-
-    // Điểm xuất phát và điểm đích là cố định
-    Position start = {0, 0};
-    Position end = {8, 9};
-
-    // Khởi tạo ma trận visited để theo dõi các ô đã được đi qua
-    vector<vector<bool>> visited(rows, vector<bool>(cols, false));
-
-    // Hướng di chuyển ban đầu
-    vector<Position> directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-
-    // Lưu trữ kết quả
-    vector<Position> path;
-    path.push_back(start);
-
-    // Quy hoạch động để tìm đường đi
-    Position current = start;
-    while (current.x != end.x || current.y != end.y) {
-        bool foundMove = false;
-
-        for (const auto& direction : directions) {
-            int new_x = current.x + direction.x;
-            int new_y = current.y + direction.y;
-
-            if (isValidMove(new_x, new_y, matrix, visited)) {
-                visited[new_x][new_y] = true;
-                path.push_back({new_x, new_y});
-                current = {new_x, new_y};
-                foundMove = true;
-                break;
-            }
-        }
-
-        if (!foundMove) {
-            // Nếu không tìm thấy bước di chuyển hợp lệ, quay lui
-            path.pop_back();
-            if (!path.empty()) {
-                current = path.back();
-            } else {
-                // Không còn đường để quay lui
-                break;
-            }
-        }
-    }
-
-    return path;
-}
-
-void printpathMatrix(const string (*matrix)[10], const vector<Position>& path) {
-
-    for (int i = 0; i < 10; i++) {
-        for (int j = 0; j < 10; j++) {
-            bool isPath = false;
-            for (const auto& pos : path) {
-                if (pos.x == i && pos.y == j) {
-                    isPath = true;
-                    break;
-                }
-            }
-
-            if (isPath) {
-                // Nếu là đường đi, in "**"
-                cout << setw(7) << "**";
-            } else {
-                if (matrix[i][j] == "0") {
-                    // Nếu là giá trị "0", in "00"
-                    cout << setw(6) << matrix[i][j][0] << matrix[i][j][matrix[i][j].size() - 1];
-                } else {
-                    // Nếu là giá trị khác "0", in giá trị với dấu ngoặc vuông và đảm bảo căn chỉnh với độ rộng 5
-                    cout << setw(4) << "[" << matrix[i][j][0] << matrix[i][j][matrix[i][j].size() - 1] << "]";
-                }
-            }
-        }
-        cout << endl;
-    }
-    cout << endl;
-}
-void countObject(const string (*matrix)[10], const vector<Position>& path, unordered_set<string>& hSet, unordered_set<string>& cSet, unordered_set<string>& tSet) {
-    for (const auto& pos : path) {
-        int x = pos.x;
-        int y = pos.y;
-
-        int radius = 1;
-        for (int i = -radius; i <= radius; ++i) {
-            for (int j = -radius; j <= radius; ++j) {
-                int newX = x + i;
-                int newY = y + j;
-
-                if (newX >= 0 && newX < 10 && newY >= 0 && newY < 10 && matrix[newX][newY] != "00") {
-                    string symbol = matrix[newX][newY];
-
-                    // Handle objects with brackets
-                    if (symbol[0] == '[') {
-                        symbol = symbol.substr(1, symbol.size() - 2);
-                    }if (symbol[0] == 'H') {
-                        hSet.insert(symbol);
-                    } else if (symbol[0] == 'C') {
-                        cSet.insert(symbol);
-                    }else if (symbol[0] == 'T') {
-                        tSet.insert(symbol);
-                    }
-                }
-            }
-        }
-    }
-}
-
-void printSets( const unordered_set<string>& hSet, const unordered_set<string>& cSet, const unordered_set<string>& tSet ) {
-
-    if (!hSet.empty()) {
-        cout << "Objects in H set:" << endl;
-        for (const auto &symbol: hSet) {
-            cout << symbol << " ";
-        }
-    }
-    cout << endl;
-    if(!cSet.empty()) {
-        cout << "Objects in C set:" << endl;
-        for (const auto &symbol: cSet) {
-            cout << symbol << " ";
-        }
-    }
-    cout << endl;
-
-    if (!tSet.empty()) {
-        cout << "Objects in T set:" << endl;
-        for (const auto &symbol: tSet) {
-            cout << symbol << " ";
-        }
-    }
-    cout << endl;
-    size_t maxSize = max({ hSet.size(), cSet.size(),tSet.size()});
-    if (maxSize==0){
-        cout << "There is no object visible "<<endl;
-
-
-    } else if (maxSize == hSet.size() && maxSize != 0) {
-        cout << " H has the maximum spots: " <<maxSize<< endl;
-    } else if (maxSize == cSet.size() && maxSize != 0) {
-        cout << " C set has the maximum spots: " <<maxSize<< endl;
-    } else if (maxSize == tSet.size() && maxSize != 0) {
-        cout << " T set has the maximum spots: " <<maxSize<< endl;
-    }
-};
-void function2(){
-    //                 Hỏi người dùng muốn bắt đầu từ Map nào
-    string mapfirstIndex, maplastIndex;
-    cout << "Please enter your start map you want to find path: ";
-    cin >> mapfirstIndex;
-    cout << endl;
-    cout << "Please enter your last map you want to finish : ";
-    cin >> maplastIndex;
-    cout << endl;
-    int firstIndex, lastIndex;
-    for (int i = 0; i < mapList.size(); i++) {
-        if (mapfirstIndex == mapList[i].getIndex()) {
-            firstIndex = i;
-        }
-
-    }
-    for (int i = 0; i < mapList.size(); i++) {
-        if (maplastIndex == mapList[i].getIndex()) {
-            lastIndex = i;
-        }
-
-    }
-
-
-    for (int t = firstIndex ; t < lastIndex+1; t++ ) {
-        // Khởi tạo vector
-        cout <<"MAP"<< mapList[t].getIndex()<<endl;
-        vector<vector<int>> inputMatrix3;
-        unordered_set<string> gSet, hSet, cSet, tSet;
-        for (int i = 0; i < 10; i++) {
-            vector<int> row;
-            for (int j = 0; j < 10; j++) {
-                if (mapList[t].getElementAt(i, j) == "0") {
-                    row.push_back(0);
-                } else {
-                    row.push_back(1);
-                }
-            }
-            inputMatrix3.push_back(row);
-        }
-
-        // In dữ liệu của inputMatrix3 để kiểm tra
-        // mapList[2].printMatrix();
-
-        vector<Position> path = findPath(inputMatrix3);
-        countObject(mapList[t].getMatrix(), path, hSet, cSet,tSet);
-        // Print the results
-
-        cout << endl;
-        printpathMatrix(mapList[t].getMatrix(), path);
-        printSets( hSet, cSet, tSet);
-
-    }
-
-};
 int main() {
     readFile("map.txt");
     int choice;

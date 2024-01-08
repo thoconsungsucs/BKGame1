@@ -180,3 +180,17 @@ GOTO0
 0,0,0
 model\GOTO0.obj
 
+MAPhangxinhgai
+OBJ
+TREE0
+2,3,4
+1,1,1
+20,245,323
+model\TREE0.obj
+OBJ
+CAR0
+5,6,7
+1,1,1
+39,295,79
+model\CAR0.obj
+

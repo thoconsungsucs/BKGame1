@@ -24,6 +24,7 @@ private:
 
 public:
     Object() {
+        srand(time(0));
         path = "";
         name = "";
         posX = "0";
@@ -32,9 +33,10 @@ public:
         scaleX = "1";
         scaleY = "1";
         scaleZ = "1";
-        rotX = "0";
-        rotY = "0";
-        rotZ = "0";
+        // Random rotation
+        rotX = to_string(rand() % 365);
+        rotY = to_string(rand() % 365);
+        rotZ = to_string(rand() % 365);
     }
 
     Object(string path, string name, string posX, string posY, string posZ,
@@ -224,15 +226,17 @@ public:
 
 };
 
-
+// Khởi tạo tổng map
 vector<Map> mapList;
 
+// Đọc file
 bool readFile(const string &filename) {
     string line, nameMap, objID, objName, modelName;
     string posX, posY, posZ, scaleX, scaleY, scaleZ, rotX, rotY, rotZ;
     fstream input;
     input.open(filename, ios::in);
 
+    // Kiểm tra xem file mở được không
     if (!input.is_open()) {
         cout << "FILE ERROR. Cannot open file: " << filename << ". Please try again!\n";
         return false;
@@ -311,20 +315,24 @@ void printMap()
 }
 
 //Function 1:
+// Sử dụng 'w', 'a', 's', 'd' để di chuyển
+// Nhấn 'e' để thoát
 void play() {
     int index;
     do {
+        // Chọn map muốn chơi
         cout << "There are " << mapList.size() << ", choose map you want to go to";
         cin >> index;
-    } while (index < mapList.size() && index < 0);
-
+    } while (index > mapList.size() && index < 0);
+    index--;
     bool flag = false; // First time
     string matrix[10][10];
     int curX = 0;
     int curY = 0;
     do {
-        if (index < mapList.size() || index == -1) {
+        if (index < mapList.size()) {
             if (!flag || (curX == 9 && curY == 9)) {
+                // Lấy dữ liệu map hiện tại
                 const string (*matrixPtr)[10] = mapList[index].getMatrix();
                 for (int i = 0; i < 10; i++) {
                     for (int j = 0; j < 10; j++) {
@@ -338,32 +346,33 @@ void play() {
             }
         }
         flag = true;
-        cout << "Map" << mapList[index].getIndex();
+        cout << "Map" << mapList[index - 1].getIndex() << endl;
         printMatrix(matrix);
-        cout << "Input W A S D to move";
+        cout << "Input 'w', 'a', 's', 'd' to move" << endl;
+        cout << "'e' to exit";
         char move;
         cin >> move;
         switch (move) {
             case 'w':
-                if (curX == 0 || matrix[curX - 1][curY] != "0") continue;
+                if (curX == 0 || (matrix[curX - 1][curY] != "0" && matrix[curX - 1][curY].substr(0, 4) != "GOTO")) continue;
                 matrix[curX][curY] = "0";
                 matrix[curX - 1][curY] = "NV";
                 curX--;
                 break;
             case 'a':
-                if (curY == 0 || matrix[curX][curY - 1] != "0") continue;
+                if (curY == 0 || (matrix[curX][curY - 1] != "0" && matrix[curX][curY - 1].substr(0, 4) != "GOTO")) continue;
                 matrix[curX][curY] = "0";
                 matrix[curX][curY - 1] = "NV";
                 curY--;
                 break;
             case 's':
-                if (curX == 9 || matrix[curX + 1][curY] != "0") continue;
+                if (curX == 9 || (matrix[curX + 1][curY] != "0" && matrix[curX + 1][curY].substr(0, 4) != "GOTO")) continue;
                 matrix[curX][curY] = "0";
                 matrix[curX + 1][curY] = "NV";
                 curX++;
                 break;
             case 'd':
-                if (curY == 9 || matrix[curX][curY + 1] != "0") continue;
+                if (curY == 9 || (matrix[curX][curY + 1] != "0" && matrix[curX][curY + 1].substr(0, 4) != "GOTO")) continue;
                 matrix[curX][curY] = "0";
                 matrix[curX][curY + 1] = "NV";
                 curY++;
@@ -701,13 +710,16 @@ void checkValid() {
         vector<Object> curList = mapList[i].getList();
         for (int j = 0; j < curList.size(); j++) {
             string filePath = curList[j].getPath();
+
             if (fs::exists(filePath)) {
                 cout << "Object " << curList[j].getName() << " has file path \n";
+
             } else {
                 cout << "Object " << curList[j].getName() << " doesn't have file path \n";
             }
         }
     }
+    cout << endl;
 
     for (int i = 0; i < mapList.size(); i++) {
         vector<Object> curList = mapList[i].getList();
@@ -986,7 +998,7 @@ int main() {
 
         else if (choice == 5)
         {
-
+            checkValid();
         }
 
         else if (choice == 6)
